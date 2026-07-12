@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Model\Character.cs" />
     <Compile Include="Assets\Scripts\Model\Gun.cs" />
     <Compile Include="Assets\Scripts\Model\Weapons\Rifle.cs" />
+    <Compile Include="Assets\Scripts\Model\Enemy\ZombieSpeed.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\VariableJoystick.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\Zombie.cs" />
     <Compile Include="Assets\Scripts\GameFeelManager.cs" />
@@ -77,10 +78,13 @@
     <Compile Include="Assets\Scripts\Model\Boom.cs" />
     <Compile Include="Assets\Joystick Pack\Examples\JoystickSetterExample.cs" />
     <Compile Include="Assets\Scripts\EnemySpawner.cs" />
+    <Compile Include="Assets\Scripts\Model\Enemy\ZombieHP.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\Enemy.cs" />
     <Compile Include="Assets\Scripts\Model\Bullet.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\FloatingJoystick.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\DynamicJoystick.cs" />
+    <Compile Include="Assets\Scripts\Model\SoldierAnimator.cs" />
+    <Compile Include="Assets\Scripts\Model\Enemy\EnemyAnimator.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Base\Joystick.cs" />
     <Compile Include="Assets\Scripts\Model\Soldier.cs" />
     <Compile Include="Assets\Scripts\Model\Weapons\Shotgun.cs" />
@@ -93,9 +97,12 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\ZombieAsset\2\License.txt" />
+    <None Include="Assets\ZombieAsset\1\License.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+    <None Include="Assets\ZombieAsset\2\README.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
@@ -104,6 +111,7 @@
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\ZombieAsset\1\README.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />

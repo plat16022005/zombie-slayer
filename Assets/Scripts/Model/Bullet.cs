@@ -32,6 +32,18 @@ public class Bullet : MonoBehaviour
         float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+        // KHI VỪA SPAWN: Quét ngay tại chỗ xem có đang nằm đè lên quái vật nào không
+        // Giúp chống lỗi đạn spawn thẳng vào bên trong Collider quái vật và bay xuyên qua luôn
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.2f);
+        foreach (var col in hitColliders)
+        {
+            if (col.GetComponent<Enemy>() != null)
+            {
+                OnTriggerEnter2D(col); // Xử lý trúng đạn ngay lập tức
+                break;
+            }
+        }
+
         Destroy(gameObject, lifeTime);
     }
 

@@ -13,6 +13,7 @@ public class Boom : MonoBehaviour
     [SerializeField] private float heightScaleMax  = 0.5f; // Tỉ lệ to ra tối đa ở đỉnh parabol
     [SerializeField] private float arcHeight       = 2f;   // Độ cao của đường cong Parabol
     [SerializeField] private float knockbackForce  = 15f;  // Lực đẩy lùi enemy khi nổ
+    [SerializeField] private float rotationSpeed   = 360f; // Độ xoay mỗi giây (degree/s)
 
     [Header("Optional VFX")]
     [SerializeField] private GameObject explosionVFXPrefab; // Prefab hiệu ứng nổ
@@ -28,7 +29,7 @@ public class Boom : MonoBehaviour
         if (rb != null)
         {
             rb.gravityScale = 0f;  // Top-down 2D: không bị rơi
-            rb.constraints  = RigidbodyConstraints2D.FreezeRotation;
+            // Không FreezeRotation — để boom tự xoay trong ThrowRoutine
         }
         else
             Debug.LogWarning("[Boom] Thiếu Rigidbody2D!");
@@ -85,6 +86,9 @@ public class Boom : MonoBehaviour
 
             // 4. Phóng to một chút để tạo cảm giác không gian 3D
             transform.localScale = originalScale * (1f + heightParam * heightScaleMax);
+
+            // 5. Xoay boom trong khi bay
+            transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
 
             yield return null;
         }

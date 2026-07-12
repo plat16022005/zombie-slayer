@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7918210198996432811}
-  - component: {fileID: 5319222767390611032}
   - component: {fileID: 6916081952529620063}
+  - component: {fileID: 9198572538777047430}
   m_Layer: 3
   m_Name: Rifle
   m_TagString: Untagged
@@ -28,13 +28,36 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.017, y: 0.573, z: 0}
-  m_LocalScale: {x: 0.08824475, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1358393696290700222}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &5319222767390611032
+--- !u!114 &6916081952529620063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4123347776088747186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9494fa63261914b87a2d633ebd133f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireRate: 0
+  maxAmmo: 0
+  reloadTime: 0
+  recoilForce: 0
+  bulletSpawnPoint: {fileID: 1358393696290700222}
+  muzzleFlashPrefab: {fileID: 5266812821415380680, guid: 72be5b1bb54a3634e8a4246404c50e54, type: 3}
+  kickDistance: 0.1
+  kickDuration: 0.08
+  fireSound: {fileID: 8300000, guid: 7024e3254cf4151468af4849dd85ba36, type: 3}
+  reloadSound: {fileID: 8300000, guid: 8320b9f1ce988d343842babd11815ee1, type: 3}
+  bulletPrefab: {fileID: 5480568994218149394, guid: 0bcb670260e413b45ac19d542f04cec3, type: 3}
+--- !u!212 &9198572538777047430
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,41 +97,18 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.7584905, g: 0.7584905, b: 0.7584905, a: 1}
+  m_SortingOrder: 7
+  m_Sprite: {fileID: 21300000, guid: e2fd7c68624820548903ea96550f9a10, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 6.77, y: 3.68}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6916081952529620063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4123347776088747186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb9494fa63261914b87a2d633ebd133f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireRate: 0
-  maxAmmo: 0
-  reloadTime: 0
-  recoilForce: 0
-  bulletSpawnPoint: {fileID: 1358393696290700222}
-  muzzleFlashPrefab: {fileID: 0}
-  kickDistance: 0.1
-  kickDuration: 0.08
-  fireSound: {fileID: 8300000, guid: 7024e3254cf4151468af4849dd85ba36, type: 3}
-  reloadSound: {fileID: 8300000, guid: 8320b9f1ce988d343842babd11815ee1, type: 3}
-  bulletPrefab: {fileID: 5480568994218149394, guid: 0bcb670260e413b45ac19d542f04cec3, type: 3}
 --- !u!1 &6230435686402827967
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +134,7 @@ Transform:
   m_GameObject: {fileID: 6230435686402827967}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.49, z: 0}
+  m_LocalPosition: {x: 0.678, y: 0.122, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

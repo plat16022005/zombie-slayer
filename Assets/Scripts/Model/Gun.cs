@@ -52,7 +52,6 @@ public abstract class Gun : MonoBehaviour
     {
         currentAmmo = maxAmmo;
 
-        // Lấy Soldier từ GameObject cha
         ownerSoldier = GetComponentInParent<Soldier>();
         if (ownerSoldier == null)
             Debug.LogWarning($"{name}: Không tìm thấy Soldier trên parent!");
@@ -98,7 +97,7 @@ public abstract class Gun : MonoBehaviour
             // Cinemachine cần Amplitude lớn hơn một chút để thấy rõ.
             // Thời gian rung (Duration) chỉ nên rất ngắn (0.05 - 0.1s) để súng bắn nhanh không bị chóng mặt.
             float shakeMagnitude = Mathf.Clamp(recoilForce * 0.2f, 0.5f, 3f); 
-            GameFeelManager.Instance.ShakeCamera(0.2f, shakeMagnitude);
+            GameFeelManager.Instance.ShakeCamera(0.2f, shakeMagnitude * 5);
         }
 
         // Phát âm thanh bắn súng
@@ -106,10 +105,7 @@ public abstract class Gun : MonoBehaviour
             audioSource.PlayOneShot(fireSound);
 
         Debug.Log($"Bắn! Đạn còn: {currentAmmo}/{maxAmmo}");
-
-        // Hết đạn → tự động bắt đầu nạp
-        if (currentAmmo < AmmoCostPerShot)
-            Reload();
+        // Không tự reload — người chơi phải bấm lại để kích reload
     }
 
     public bool CanFire()
@@ -135,13 +131,35 @@ public abstract class Gun : MonoBehaviour
     }
 
     /// <summary>
-    /// Lấy vị trí mũi súng
+    /// Lấy vị trí mũi súng. Có xử lý chống "hụt đạn" khi quái vật hoặc vật cản áp sát sát người (kẹp giữa người và mũi súng).
     /// </summary>
     public Vector3 GetBulletSpawnPosition()
     {
-        if (bulletSpawnPoint != null)
-            return bulletSpawnPoint.position;
-        return transform.position;
+        Vector3 startPos = ownerSoldier != null ? ownerSoldier.transform.position : transform.parent != null ? transform.parent.position : transform.position;
+        Vector3 endPos = bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position;
+        
+        if (startPos == endPos) return endPos;
+
+        Vector2 direction = endPos - startPos;
+        float distance = direction.magnitude;
+
+        // ĐẢO NGƯỢC HƯỚNG QUÉT: Bắn tia quét từ MŨI SÚNG ngược về BỤNG NGƯỜI CHƠI
+        // Lý do: Nếu bụng người chơi đang nằm TRONG Collider của quái vật, Raycast từ bụng bay ra sẽ bị Unity bỏ qua (tuỳ setting).
+        // Nhưng Raycast từ mũi súng (đang ở ngoài) đâm ngược vào thì chắc chắn sẽ trúng bề mặt của quái vật!
+        RaycastHit2D[] hits = Physics2D.LinecastAll(endPos, startPos);
+        
+        foreach (var hit in hits)
+        {
+            // Bỏ qua các Collider của chính người chơi hoặc súng (cùng chung root)
+            if (hit.collider != null && hit.collider.transform.root != transform.root)
+            {
+                // Nếu trúng quái vật hoặc tường nằm lọt giữa mũi súng và người chơi
+                // Trả về luôn điểm va chạm đó để đạn spawn ngay tại chỗ và nổ luôn
+                return hit.point;
+            }
+        }
+
+        return endPos;
     }
 
     public int  GetCurrentAmmo()    => currentAmmo;
@@ -152,10 +170,10 @@ public abstract class Gun : MonoBehaviour
     /// <summary>Xoay súng về hướng chỉ định (dùng cho 2D top-down / side-scroller)</summary>
     public void AimAt(Vector2 direction)
     {
-        if (direction == Vector2.zero) return;
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        // TODO: Bỏ comment khi muốn bật lại xoay súng theo hướng bắn
+        // if (direction == Vector2.zero) return;
+        // float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     /// <summary>Spawn muzzle flash tại đầu nòng</summary>
@@ -171,7 +189,7 @@ public abstract class Gun : MonoBehaviour
     private IEnumerator KickRoutine()
     {
         Vector3 originPos = transform.localPosition;
-        Vector3 kickBack  = originPos + transform.right * (-kickDistance); // lùi theo trục của súng
+        Vector3 kickBack  = originPos + transform.right * (-kickDistance);
 
         // Giật nhanh ra sau
         float t = 0f;
@@ -182,7 +200,7 @@ public abstract class Gun : MonoBehaviour
             yield return null;
         }
 
-        // Spring trở về chầm hơn
+        // Spring trở về chậm hơn
         t = 0f;
         while (t < 1f)
         {
@@ -191,7 +209,7 @@ public abstract class Gun : MonoBehaviour
             yield return null;
         }
 
-        transform.localPosition = originPos; // đảm bảo về đúng chính xác
+        transform.localPosition = originPos;
     }
 
     /// <summary>Đẩy người cầm súng ngược chiều bắn (giật lùi)</summary>

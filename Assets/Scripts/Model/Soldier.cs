@@ -1,4 +1,5 @@
 
+using System.Collections;
 using UnityEngine;
 
 public class Soldier : Character
@@ -11,14 +12,39 @@ public class Soldier : Character
     [SerializeField] private float recoilDecay = 20f;  // Tốc độ tắt dần giật lùi
 
 
+    // ──── Animation ────
+    [Header("Animation")]
+    [SerializeField] private SoldierAnimator soldierAnimator;
+    [SerializeField] private int idleSkinIndex = 0;
+
+    // ──── SFX ────
+    [Header("SFX")]
+    [SerializeField] private AudioClip[] hitSounds;  // Chọn ngẫu nhiên khi bị đánh
+    [SerializeField] private AudioClip   dieSound;   // Tiếng chết
+    [Tooltip("Độ trễ (giây) trước khi Destroy — đặt bằng độ dài clip animation chết")]
+    [SerializeField] private float       dieDestroyDelay = 1.5f;
+
+    // ──── Hit Flash VFX ────
+    [Header("Hit Flash VFX")]
+    [SerializeField] private Color  hitFlashColor    = new Color(1f, 0.15f, 0.15f, 1f); // Màu đỏ khi bị đánh
+    [SerializeField] private float  hitFlashDuration = 0.15f;  // Tổng thời gian hiệu ứng (giây)
+
+    private SpriteRenderer[] spriteRenderers;  // Tất cả renderer trên người & vũ khí
+    private Coroutine        hitFlashCoroutine; // Theo dõi để hủy khi bị đánh liên tiếp
+
+    private bool isDead = false;  // Khóa mọi hành động sau khi chết
+
     // ──── Weapon System ────
     [Header("Weapon System")]
     [SerializeField] private GameObject[] weaponPrefabs;   // Danh sách prefab súng
     [SerializeField] private Transform weaponHolder;        // Điểm gắn súng lên người
     [SerializeField] private AudioClip switchGunSound;
+    [Tooltip("Độ trễ (giây) từ lúc trigger Attack đến khi đạn spawn.\nĐặt = 0 nếu bạn dùng Animation Event thay thế.")]
+    [SerializeField] private float fireDelay = 0.1f;        // Chờ animation đưa súng lên đúng vị trí
 
     private Gun currentGun;         // Instance súng đang dùng
     private int currentWeaponIndex = 0;
+    private Vector2 pendingFireDirection;                   // Hướng bắn đã tính, dùng cho Animation Event
 
     // ──── Boom System ────
     [Header("Boom System")]
@@ -57,6 +83,12 @@ public class Soldier : Character
         boomCooldownTimer = 0f; // Sẵn sàng ném ngay từ đầu
         dashCooldownTimer = 0f; // Sẵn sàng lướt
         if (dashTrail != null) dashTrail.emitting = false;
+
+        // Khởi tạo animation idle đúng theo skin
+        soldierAnimator?.Init(idleSkinIndex);
+
+        // Thu thập tất cả SpriteRenderer trên người + vũ khí (dùng cho hit flash)
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     protected override void Update()
@@ -85,10 +117,62 @@ public class Soldier : Character
                 if (dashTrail != null) dashTrail.emitting = false; // Tắt vệt lướt
             }
         }
+
+        // Cập nhật animation mỗi frame
+        soldierAnimator?.UpdateState(rb.velocity, isDashing, idleSkinIndex);
     }
     public override void TakeDame(float dame)
     {
         base.TakeDame(dame);
+
+        // Chỉ play hit khi vẫn còn sống (tránh đè lên animation Die)
+        if (hp > 0)
+        {
+            soldierAnimator?.PlayHit();
+
+            // Phát tiếng bị đánh (random trong mảng nếu có nhiều clip)
+            if (hitSounds != null && hitSounds.Length > 0 && audioSource != null)
+            {
+                AudioClip clip = hitSounds[Random.Range(0, hitSounds.Length)];
+                if (clip != null) audioSource.PlayOneShot(clip);
+            }
+
+            // Hiệu ứng đỏ khi bị đánh
+            if (hitFlashCoroutine != null) StopCoroutine(hitFlashCoroutine);
+            hitFlashCoroutine = StartCoroutine(HitFlashRoutine());
+        }
+    }
+
+    /// <summary>Lerp tất cả SpriteRenderer sang đỏ rồi trả về trắng.</summary>
+    private IEnumerator HitFlashRoutine()
+    {
+        if (spriteRenderers == null || spriteRenderers.Length == 0) yield break;
+
+        float half = hitFlashDuration * 0.5f;
+        float t    = 0f;
+
+        // Fade vào đỏ
+        while (t < 1f)
+        {
+            t += Time.deltaTime / half;
+            Color c = Color.Lerp(Color.white, hitFlashColor, t);
+            foreach (var sr in spriteRenderers) if (sr != null) sr.color = c;
+            yield return null;
+        }
+
+        // Fade trở lại trắng
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / half;
+            Color c = Color.Lerp(hitFlashColor, Color.white, t);
+            foreach (var sr in spriteRenderers) if (sr != null) sr.color = c;
+            yield return null;
+        }
+
+        // Đảm bảo reset chính xác về trắng
+        foreach (var sr in spriteRenderers) if (sr != null) sr.color = Color.white;
+        hitFlashCoroutine = null;
     }
     /// <summary>
     /// Trang bị súng theo index — Destroy cũ, Instantiate mới vào weaponHolder
@@ -119,23 +203,39 @@ public class Soldier : Character
             Debug.LogError($"Prefab '{weaponPrefabs[index].name}' không có component Gun!");
         else
             Debug.Log($"🔫 Trang bị: {weaponPrefabs[index].name}");
+        idleSkinIndex = index;
     }
 
 
     public override void Attack()
     {
-        if (isDashing) return; // Khóa tấn công khi lướt
+        if (isDead)    return;
+        if (isDashing) return;          // Khóa tấn công khi lướt
         if (currentGun == null) return;
 
-        // Tìm enemy gần nhất theo tag
+        // ── Guard ──
+        if (!currentGun.CanFire())
+        {
+            // Hết đạn + chưa reload → bấm attack lần này mới bắt đầu nạp
+            if (currentGun.GetCurrentAmmo() == 0 && !currentGun.IsReloading())
+            {
+                currentGun.Reload();
+                soldierAnimator?.PlayReload();
+            }
+            return;
+        }
+
+        // Tính hướng bắn TRƯỚC khi trigger animation
         Transform nearestEnemy = FindNearestEnemy();
         Vector2 fireDirection;
 
         if (nearestEnemy != null)
         {
-            Vector3 gunPos    = currentGun.GetBulletSpawnPosition();
+            // Dùng transform.position của soldier thay vì GetBulletSpawnPosition()
+            // vì lúc này súng chưa vào đúng vị trí attack
+            Vector3 originPos = transform.position;
             Vector3 enemyPos  = nearestEnemy.position;
-            fireDirection     = (enemyPos - gunPos).normalized;
+            fireDirection     = (enemyPos - originPos).normalized;
             lastDirection     = fireDirection;
         }
         else
@@ -147,8 +247,37 @@ public class Soldier : Character
                 lastDirection = fireDirection;
         }
 
+        pendingFireDirection = fireDirection;
         currentGun.AimAt(fireDirection);
-        currentGun.Fire(fireDirection);
+
+        // Quay mặt về hướng địch trước khi bắn
+        FlipToward(fireDirection);
+
+        // Trigger animation attack — animation sẽ đưa súng lên đúng vị trí
+        soldierAnimator?.PlayAttack();
+
+        // Nếu fireDelay > 0: chờ animation đưa súng lên rồi mới bắn
+        // Nếu fireDelay = 0: bạn đang dùng Animation Event (OnFireEvent) thay thế
+        if (fireDelay > 0f)
+            StartCoroutine(DelayedFire(fireDirection, fireDelay));
+    }
+
+    /// <summary>
+    /// Gọi bởi Animation Event tại frame súng đã lên đúng vị trí bắn.
+    /// Kéo event vào clip Attack, đặt tại keyframe mà mũi súng đã đến vị trí đúng.
+    /// (Nhớ đặt fireDelay = 0 trong Inspector khi dùng cách này)
+    /// </summary>
+    public void OnFireEvent()
+    {
+        if (currentGun == null) return;
+        currentGun.Fire(pendingFireDirection);
+    }
+
+    private IEnumerator DelayedFire(Vector2 direction, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (currentGun != null)
+            currentGun.Fire(direction);
     }
 
     /// <summary>
@@ -176,15 +305,33 @@ public class Soldier : Character
 
     protected override void Die()
     {
-        if (hp <= 0)
+        if (hp <= 0 && !isDead)
         {
+            isDead = true;
             Debug.Log("Player đã chết");
-            Destroy(this.gameObject);
+
+            // Dừng ngay chuyển động
+            rb.velocity = Vector2.zero;
+            rb.isKinematic = true;
+
+            // Tắt collider để zombie không tiếp tục gây sát thương
+            var col = GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            // Play animation & sound
+            soldierAnimator?.PlayDie();
+            if (dieSound != null && audioSource != null)
+                audioSource.PlayOneShot(dieSound);
+
+            // Destroy sau khi animation chết chạy xong
+            Destroy(gameObject, dieDestroyDelay);
         }
     }
 
     protected override void Move()
     {
+        if (isDead) { rb.velocity = Vector2.zero; return; }
+
         // Nếu đang lướt thì ưu tiên lấy velocity của Dash
         if (isDashing)
         {
@@ -216,6 +363,10 @@ public class Soldier : Character
         {
             lastDirection = inputDir;
         }
+
+        // Lật nhân vật theo hướng ngang
+        if (horizontal != 0f)
+            FlipToward(new Vector2(horizontal, 0f));
     }
 
     // ──── Switch Weapon ────
@@ -243,6 +394,7 @@ public class Soldier : Character
         if (currentGun != null)
         {
             currentGun.Reload();
+            soldierAnimator?.PlayReload();
             Debug.Log($"⚡ Nạp đạn: {GetCurrentWeaponName()}");
         }
     }
@@ -256,6 +408,7 @@ public class Soldier : Character
     /// <summary>Ném lựu đạn về hướng địch gần nhất hoặc hướng cuối</summary>
     public void ThrowBoom()
     {
+        if (isDead)    return;
         if (isDashing) return; // Khóa ném bom khi lướt
 
         if (boomPrefab == null)
@@ -284,6 +437,11 @@ public class Soldier : Character
             targetPos = (Vector2)origin + lastDirection.normalized * 5f;
         }
 
+        // Quay mặt về hướng ném + trigger animation
+        Vector2 throwDir = ((Vector2)targetPos - (Vector2)origin).normalized;
+        FlipToward(throwDir);
+        soldierAnimator?.PlayThrowBoom();
+
         // Spawn boom
         GameObject boomObj = Instantiate(boomPrefab, origin, Quaternion.identity);
         if (boomSound != null && audioSource != null)
@@ -299,6 +457,7 @@ public class Soldier : Character
     // ──── Dash ────
     public void Dash()
     {
+        if (isDead) return;
         if (dashCooldownTimer > 0 || isDashing)
         {
             Debug.Log($"Dash đang hồi! Chờ thêm {dashCooldownTimer:F1}s");

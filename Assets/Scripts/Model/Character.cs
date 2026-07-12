@@ -59,6 +59,19 @@ public abstract class Character: MonoBehaviour
 
     protected abstract void Die();
     protected abstract void Move();
+
+    /// <summary>
+    /// Lật sprite trái/phải theo hướng ngang của direction.
+    /// Dùng localScale để giữ đúng vị trí của child objects (súng, muzzle...).
+    /// Gọi từ bất kỳ Character nào — Soldier, Enemy, ...
+    /// </summary>
+    public void FlipToward(Vector2 direction)
+    {
+        if (direction.x == 0f) return;
+        Vector3 s = transform.localScale;
+        s.x = direction.x < 0f ? -Mathf.Abs(s.x) : Mathf.Abs(s.x);
+        transform.localScale = s;
+    }
 }
 
 public enum StateCharacter
