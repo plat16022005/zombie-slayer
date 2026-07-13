@@ -5,6 +5,7 @@ public abstract class Character: MonoBehaviour
 {
     protected Rigidbody2D rb;
     protected StateCharacter state;
+    public float maxHp { get; protected set; }
     public float hp { get; protected set; }
     public float attack { get; protected set; }
     public float speed { get; protected set; }

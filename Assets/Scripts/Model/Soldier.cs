@@ -70,7 +70,8 @@ public class Soldier : Character
 
     protected override void Init()
     {
-        hp = 100;
+        maxHp = 100;
+        hp = maxHp;
         attack = 20;
         speed = 10;
         defend = 5;
@@ -332,10 +333,13 @@ public class Soldier : Character
     {
         if (isDead) { rb.velocity = Vector2.zero; return; }
 
-        // Nếu đang lướt thì ưu tiên lấy velocity của Dash
+        // Quan trọng: Gọi hàm DecayKnockback() của class cha để lực hất văng giảm dần
+        DecayKnockback();
+
+        // Nếu đang lướt thì ưu tiên lấy velocity của Dash (vẫn cộng dồn knockback nếu có)
         if (isDashing)
         {
-            rb.velocity = dashDirection * dashSpeed;
+            rb.velocity = dashDirection * dashSpeed + knockbackVelocity;
             return;
         }
 
@@ -343,7 +347,9 @@ public class Soldier : Character
         recoilVelocity = Vector2.MoveTowards(recoilVelocity, Vector2.zero, recoilDecay * Time.deltaTime);
 
         Vector2 moveDirection = new Vector2(horizontal, vertical).normalized;
-        rb.velocity = moveDirection * speed + recoilVelocity;
+        
+        // Cộng tổng tất cả các lực: Di chuyển cơ bản + Giật lùi của súng + Lực hất văng của Boss
+        rb.velocity = moveDirection * speed + recoilVelocity + knockbackVelocity;
     }
 
     /// <summary>Nhận xung lực giật lùi từ súng</summary>
@@ -400,6 +406,7 @@ public class Soldier : Character
     }
 
     public int    GetCurrentAmmo()       => currentGun != null ? currentGun.GetCurrentAmmo() : 0;
+    public int    GetMaxAmmo()           => currentGun != null ? currentGun.GetMaxAmmo() : 0;
     public string GetCurrentWeaponName() => currentGun != null ? currentGun.gameObject.name  : "No Weapon";
     public float  GetBoomCooldown()      => Mathf.Max(0, boomCooldownTimer);
     public bool   IsBoomReady()          => boomCooldownTimer <= 0;

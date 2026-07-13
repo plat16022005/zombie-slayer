@@ -15,7 +15,7 @@ public class Shotgun : Gun
     protected override void Init()
     {
         fireRate    = 1.2f;
-        maxAmmo     = 15;
+        maxAmmo     = 20;
         reloadTime  = 2f;
         recoilForce = 12f;
     }

@@ -10,15 +10,16 @@ using UnityEngine;
 /// </summary>
 public class EnemyAnimator : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
+    [SerializeField] protected Animator animator;
 
     // ──── Tên Parameter (phải khớp chính xác trong Animator) ────
     private const string PARAM_IS_MOVING = "isMoving";
     private const string PARAM_ATTACK    = "Attack";
     private const string PARAM_HIT       = "Hit";
     private const string PARAM_DIE       = "Die";
+    private const string PARAM_SPAWN     = "Spawn";
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
@@ -36,7 +37,8 @@ public class EnemyAnimator : MonoBehaviour
     }
 
     // ──── One-shot Triggers ────
-    public void PlayAttack() => animator.SetTrigger(PARAM_ATTACK);
-    public void PlayHit()    => animator.SetTrigger(PARAM_HIT);
-    public void PlayDie()    => animator.SetTrigger(PARAM_DIE);
+    public virtual void PlayAttack() => animator.SetTrigger(PARAM_ATTACK);
+    public virtual void PlayHit()    => animator.SetTrigger(PARAM_HIT);
+    public virtual void PlayDie()    => animator.SetTrigger(PARAM_DIE);
+    public virtual void PlaySpawn()  => animator.SetTrigger(PARAM_SPAWN);
 }

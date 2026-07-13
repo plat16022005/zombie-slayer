@@ -14674,6 +14674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8712362106329436649}
   - component: {fileID: 4680693746864659389}
+  - component: {fileID: 1719531405772468465}
   m_Layer: 0
   m_Name: EffectBullet
   m_TagString: Untagged
@@ -14714,6 +14715,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedLifeTime: 2
   waitForParticle: 1
+--- !u!210 &1719531405772468465
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6274970769164657228}
+  m_Enabled: 1
+  m_SortingLayerID: -597610299
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1001 &3695453280889681392
 PrefabInstance:
   m_ObjectHideFlags: 0

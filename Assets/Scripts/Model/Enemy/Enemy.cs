@@ -4,11 +4,15 @@ using UnityEngine;
 public abstract class Enemy : Character
 {
     protected Transform player;
-    [SerializeField] protected float attackCooldown = 1f;
-    protected float attackTimer = 0f;
+    protected Soldier targetSoldier;
+    
+    [Header("Combat Settings")]
+    [Tooltip("Tầm tấn công của quái (hiển thị vòng tròn vàng trong Scene)")]
     [SerializeField] protected float attackRange = 1f;
+    [Tooltip("Thời gian giữa 2 đòn đánh thường")]
+    [SerializeField] protected float attackCooldown = 1f;
     [SerializeField] protected AudioClip attackSound;
-
+    protected float attackTimer = 0f;
     [Header("Animation")]
     [SerializeField] protected EnemyAnimator enemyAnimator;
 
@@ -20,28 +24,51 @@ public abstract class Enemy : Character
     [SerializeField] protected float moanIntervalMax = 10f;
     protected float moanTimer;
 
-    // ──── Hit Flash VFX ────
+    // ──── Hit Flash VFX (Shader MaterialPropertyBlock) ────
     [Header("Hit Flash VFX")]
-    [SerializeField] private Color  hitFlashColor    = new Color(1f, 0.15f, 0.15f, 1f);
-    [SerializeField] private float  hitFlashDuration = 0.15f;
+    [SerializeField] private float hitFlashDuration = 0.1f;
+    [SerializeField, Range(0f, 1f)] private float hitFlashIntensity = 0.5f; // Mức độ chớp sáng
+
+    // ──── Blood Splatter VFX ────
+    [Header("Blood Splatter VFX")]
+    [SerializeField] private ParticleSystem bloodSplatterPrefab; // Assign BloodSplatter prefab
 
     [Header("Die Settings")]
-    [Tooltip("Thời gian chờ (giây) để animation chết chạy xong trước khi Destroy.\nĐặt = độ dài clip Die.")]
-    [SerializeField] protected float dieDestroyDelay = 2f;
+    [Tooltip("Khói đen bốc lên khi zombie chết.")]
+    [SerializeField] protected ParticleSystem deathSmokePrefab;
+    [Tooltip("Thời gian chờ trước khi bắt đầu hiệu ứng mờ dần.")]
+    [SerializeField] protected float fadeWaitTime = 1f;
+    [Tooltip("Thời gian chạy hiệu ứng mờ dần.")]
+    [SerializeField] protected float fadeDuration = 2f;
+    
+    [Header("Spawn Settings")]
+    [Tooltip("Thời gian đứng yên lúc mới sinh ra (dành cho animation mọc từ dưới đất)")]
+    [SerializeField] protected float spawnDelay = 1f;
 
-    private SpriteRenderer[] spriteRenderers;
-    private Coroutine        hitFlashCoroutine;
-    private bool             isDead = false;
+    private SpriteRenderer[]    spriteRenderers;
+    private MaterialPropertyBlock mpb;                        
+    private static readonly int  FlashAmountID = Shader.PropertyToID("_FlashAmount"); 
+    private static readonly int  FadeAmountID = Shader.PropertyToID("_FadeAmount");
+    private Coroutine            hitFlashCoroutine;
+    protected bool               isDead = false;
+    protected bool               isSpawning = false;
 
     protected override void Awake()
     {
         base.Awake();
 
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        mpb = new MaterialPropertyBlock();
+
+        // Đảm bảo FlashAmount bắt đầu = 0 (bình thường)
+        SetFlashAmount(0f);
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
+        {
             player = playerObject.transform;
+            targetSoldier = playerObject.GetComponent<Soldier>();
+        }
         if (player == null)
             Debug.LogWarning("Ko tìm thấy Player");
     }
@@ -49,6 +76,15 @@ public abstract class Enemy : Character
     protected override void Update()
     {
         if (isDead) return;
+        if (isSpawning) return; // Đứng yên, không cắn, không xoay người lúc đang spawn
+
+        // Nếu người chơi đã chết, Zombie đứng im
+        if (targetSoldier != null && targetSoldier.hp <= 0)
+        {
+            rb.velocity = Vector2.zero;
+            enemyAnimator?.UpdateState(false);
+            return;
+        }
 
         attackTimer -= Time.deltaTime;
         base.Update();
@@ -113,41 +149,48 @@ public abstract class Enemy : Character
             if (hurtSound != null && audioSource != null)
                 audioSource.PlayOneShot(hurtSound);
 
-            // Hiệu ứng đỏ khi bị đánh
+            // Shader HitFlash
             if (hitFlashCoroutine != null) StopCoroutine(hitFlashCoroutine);
             hitFlashCoroutine = StartCoroutine(HitFlashRoutine());
+
+            // Blood Splatter Particle
+            SpawnBloodSplatter();
         }
     }
 
-    /// <summary>Lerp SpriteRenderer sang đỏ rồi về trắng.</summary>
+    /// <summary>Bật shader HitFlash qua MaterialPropertyBlock, rồi tắt sau hitFlashDuration.</summary>
     private IEnumerator HitFlashRoutine()
     {
-        if (spriteRenderers == null || spriteRenderers.Length == 0) yield break;
-
-        float half = hitFlashDuration * 0.5f;
-        float t = 0f;
-
-        // Fade vào đỏ
-        while (t < 1f)
-        {
-            t += Time.deltaTime / half;
-            Color c = Color.Lerp(Color.white, hitFlashColor, t);
-            foreach (var sr in spriteRenderers) if (sr != null) sr.color = c;
-            yield return null;
-        }
-
-        // Fade trở lại trắng
-        t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime / half;
-            Color c = Color.Lerp(hitFlashColor, Color.white, t);
-            foreach (var sr in spriteRenderers) if (sr != null) sr.color = c;
-            yield return null;
-        }
-
-        foreach (var sr in spriteRenderers) if (sr != null) sr.color = Color.white;
+        SetFlashAmount(hitFlashIntensity);
+        yield return new WaitForSeconds(hitFlashDuration);
+        SetFlashAmount(0f);
         hitFlashCoroutine = null;
+    }
+
+    /// <summary>Set _FlashAmount trên tất cả SpriteRenderer qua MaterialPropertyBlock (không đụng sharedMaterial).</summary>
+    private void SetFlashAmount(float amount)
+    {
+        if (spriteRenderers == null) return;
+        foreach (var sr in spriteRenderers)
+        {
+            if (sr == null) continue;
+            sr.GetPropertyBlock(mpb);
+            mpb.SetFloat(FlashAmountID, amount);
+            sr.SetPropertyBlock(mpb);
+        }
+    }
+    private void SpawnBloodSplatter()
+    {
+        if (bloodSplatterPrefab == null) return;
+
+        ParticleSystem ps = Instantiate(
+            bloodSplatterPrefab,
+            transform.position,
+            Quaternion.identity
+        );
+        ps.Play();
+        // Tự xóa sau khi particle xong
+        Destroy(ps.gameObject, ps.main.duration + ps.main.startLifetime.constantMax);
     }
     
     protected override void Die()
@@ -155,6 +198,10 @@ public abstract class Enemy : Character
         if (hp <= 0 && !isDead)
         {
             isDead = true;
+
+            // Hủy NGAY LẬP TỨC toàn bộ các Coroutine (đòn đánh thường, skill Húc, Nhảy, Gọi đệ...)
+            // đang trong quá trình wind-up (chờ) để tránh tình trạng chết rồi vẫn gây sát thương
+            StopAllCoroutines();
 
             // Dừng vật lý ngay
             rb.velocity        = Vector2.zero;
@@ -169,14 +216,52 @@ public abstract class Enemy : Character
             if (deathSound != null && audioSource != null)
                 audioSource.PlayOneShot(deathSound);
 
-            // Destroy sau khi animation chạy xong
-            Destroy(gameObject, dieDestroyDelay);
+            // Bắt đầu quá trình mờ dần rồi mới hủy Object
+            StartCoroutine(FadeOutRoutine());
+
+            // Sinh ra hiệu ứng khói đen
+            if (deathSmokePrefab != null)
+            {
+                ParticleSystem smoke = Instantiate(deathSmokePrefab, transform.position, Quaternion.Euler(-90f, 0f, 0f)); // Khói hướng lên trên (thường là Z up theo 2D)
+                smoke.Play();
+                Destroy(smoke.gameObject, smoke.main.duration + smoke.main.startLifetime.constantMax);
+            }
         }
+    }
+
+    private IEnumerator FadeOutRoutine()
+    {
+        // 1. Chờ 1 giây trước khi mờ dần
+        yield return new WaitForSeconds(fadeWaitTime);
+
+        // 2. Chạy hiệu ứng mờ dần (Fade Out) trong fadeDuration
+        float t = 0f;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            float amount = Mathf.Clamp01(t / fadeDuration); 
+            
+            if (spriteRenderers != null && mpb != null)
+            {
+                foreach (var sr in spriteRenderers)
+                {
+                    if (sr == null) continue;
+                    sr.GetPropertyBlock(mpb);
+                    mpb.SetFloat(FadeAmountID, amount);
+                    sr.SetPropertyBlock(mpb);
+                }
+            }
+            yield return null;
+        }
+
+        // 3. Xoá GameObject khi hoàn tất
+        Destroy(gameObject);
     }
 
     protected override void Move()
     {
         if (isDead) return;
+        if (isSpawning) { rb.velocity = Vector2.zero; return; }
 
         DecayKnockback();
 
@@ -203,5 +288,36 @@ public abstract class Enemy : Character
                 )
             );
         }
+    }
+
+    protected virtual void OnDrawGizmosSelected()
+    {
+        // Vẽ vòng tròn màu vàng thể hiện tầm đánh (attackRange) trong cửa sổ Scene
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    // ──── Spawn System ────
+    public virtual void Spawn()
+    {
+        StartCoroutine(SpawnRoutine());
+    }
+
+    protected virtual IEnumerator SpawnRoutine()
+    {
+        isSpawning = true;
+        
+        // Khóa va chạm tạm thời để không bị ăn đạn lúc vừa ngoi lên
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // Bật animation Spawn (nếu có)
+        enemyAnimator?.PlaySpawn();
+
+        yield return new WaitForSeconds(spawnDelay);
+
+        // Bật lại
+        if (col != null) col.enabled = true;
+        isSpawning = false;
     }
 }

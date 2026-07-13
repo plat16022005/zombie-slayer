@@ -10,7 +10,7 @@ public class Pistol : Gun
 
     protected override void Init()
     {
-        fireRate    = 0.2f;
+        fireRate    = 0.4f;
         maxAmmo     = 10;
         reloadTime  = 1f;
         recoilForce = 3f;
