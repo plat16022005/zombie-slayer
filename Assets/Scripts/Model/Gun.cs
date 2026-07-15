@@ -25,7 +25,7 @@ public abstract class Gun : MonoBehaviour
     private float       fireTimer   = 0f;
     private bool        isReloading = false;
     private float       reloadTimer = 0f;
-    private Soldier     ownerSoldier;                       // Soldier cầm súng
+    protected Soldier   ownerSoldier;                       // Soldier cầm súng
 
     protected abstract void Init();
 
@@ -80,7 +80,12 @@ public abstract class Gun : MonoBehaviour
             return;
 
         currentAmmo -= AmmoCostPerShot;
-        fireTimer    = fireRate;
+        float actualFireRate = fireRate;
+        if (ownerSoldier != null && ownerSoldier.fireSpeed > 0f)
+        {
+            actualFireRate /= ownerSoldier.fireSpeed;
+        }
+        fireTimer = actualFireRate;
 
         // Giật lùi người chơi
         ApplyRecoil(direction);
@@ -111,6 +116,23 @@ public abstract class Gun : MonoBehaviour
     public bool CanFire()
     {
         return fireTimer <= 0 && currentAmmo >= AmmoCostPerShot && !isReloading;
+    }
+
+    public float GetCurrentCooldown()
+    {
+        if (isReloading) return reloadTimer;
+        return Mathf.Max(0, fireTimer);
+    }
+
+    public float GetMaxCooldown()
+    {
+        if (isReloading) return reloadTime;
+        float actualFireRate = fireRate;
+        if (ownerSoldier != null && ownerSoldier.fireSpeed > 0f)
+        {
+            actualFireRate /= ownerSoldier.fireSpeed;
+        }
+        return actualFireRate > 0 ? actualFireRate : 0.1f;
     }
 
     /// <summary>

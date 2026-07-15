@@ -70,11 +70,25 @@ public class Soldier : Character
 
     protected override void Init()
     {
-        maxHp = 100;
-        hp = maxHp;
-        attack = 20;
-        speed = 10;
-        defend = 5;
+        if (DataGame.Instance != null && DataGame.Instance.HasProfile)
+        {
+            maxHp = DataGame.Instance.MaxHp;
+            attack = DataGame.Instance.Attack;
+            speed = DataGame.Instance.Speed;
+            defend = DataGame.Instance.Defend;
+            Debug.Log($"Đã tải chỉ số cho Soldier từ DataGame! (MaxHp: {maxHp}, Attack: {attack})");
+        }
+        else
+        {
+            Debug.LogWarning("Chưa load DataGame! Sử dụng chỉ số mặc định để test.");
+            maxHp = 100;
+            attack = 20;
+            speed = 10;
+            defend = 5;
+        }
+        
+        hp = maxHp; // Khởi tạo máu hiện tại bằng máu tối đa
+        fireSpeed = 1f; // Tốc độ bắn cơ bản ban đầu là 1x (có thể thay đổi trong game)
     }
 
     protected override void Awake()
@@ -408,8 +422,26 @@ public class Soldier : Character
     public int    GetCurrentAmmo()       => currentGun != null ? currentGun.GetCurrentAmmo() : 0;
     public int    GetMaxAmmo()           => currentGun != null ? currentGun.GetMaxAmmo() : 0;
     public string GetCurrentWeaponName() => currentGun != null ? currentGun.gameObject.name  : "No Weapon";
+    
+    public Sprite GetCurrentWeaponSprite()
+    {
+        if (currentGun != null)
+        {
+            SpriteRenderer sr = currentGun.GetComponent<SpriteRenderer>();
+            if (sr != null) return sr.sprite;
+        }
+        return null;
+    }
+    
+    public float GetGunCooldown()    => currentGun != null ? currentGun.GetCurrentCooldown() : 0f;
+    public float GetGunMaxCooldown() => currentGun != null ? currentGun.GetMaxCooldown() : 1f;
     public float  GetBoomCooldown()      => Mathf.Max(0, boomCooldownTimer);
+    public float  GetBoomCooldownMax()   => boomCooldown;
     public bool   IsBoomReady()          => boomCooldownTimer <= 0;
+
+    public float  GetDashCooldown()      => Mathf.Max(0, dashCooldownTimer);
+    public float  GetDashCooldownMax()   => dashCooldown;
+    public bool   IsDashReady()          => dashCooldownTimer <= 0;
 
     // ──── Boom ────
     /// <summary>Ném lựu đạn về hướng địch gần nhất hoặc hướng cuối</summary>
@@ -455,7 +487,7 @@ public class Soldier : Character
             audioSource.PlayOneShot(boomSound);
         Boom boom = boomObj.GetComponent<Boom>();
         if (boom != null)
-            boom.Throw(targetPos);
+            boom.Throw(targetPos, attack);
 
         boomCooldownTimer = boomCooldown;
         Debug.Log($"💣 Ném boom! Bắt đầu đếm ngược hồi chiêu {boomCooldown}s");
@@ -482,10 +514,60 @@ public class Soldier : Character
         if (dashSound != null && audioSource != null)
             audioSource.PlayOneShot(dashSound);
 
-        // Bật vệt lướt
+        // Bật vệt lướt cũ và bắt đầu vệt dự ảnh (Ghost Trail) mới
         if (dashTrail != null) dashTrail.emitting = true;
+        StartCoroutine(SpawnGhostTrailRoutine());
 
         Debug.Log("💨 Lướt!");
+    }
+    
+    // ──── Ghost Trail Effect ────
+    private IEnumerator SpawnGhostTrailRoutine()
+    {
+        float spawnInterval = 0.05f; // Cứ 0.05s tạo 1 dự ảnh
+        while (isDashing)
+        {
+            CreateGhost();
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    private void CreateGhost()
+    {
+        if (spriteRenderers == null || spriteRenderers.Length == 0) return;
+
+        foreach (SpriteRenderer mySr in spriteRenderers)
+        {
+            if (mySr == null || mySr.sprite == null || !mySr.enabled) continue;
+
+            GameObject ghostObj = new GameObject("DashGhost");
+            ghostObj.transform.position = mySr.transform.position;
+            ghostObj.transform.rotation = mySr.transform.rotation;
+            ghostObj.transform.localScale = mySr.transform.lossyScale; // Áp dụng tỷ lệ chính xác từ cha
+
+            SpriteRenderer sr = ghostObj.AddComponent<SpriteRenderer>();
+            sr.sprite = mySr.sprite;
+            sr.sortingLayerName = mySr.sortingLayerName;
+            sr.sortingOrder = mySr.sortingOrder - 1; // Cho chìm dưới bản gốc
+            sr.color = Color.black; // Xanh dương ngọc (Cyan) bán trong suốt
+
+            StartCoroutine(FadeGhost(sr, 0.3f)); // Mờ dần trong 0.3s
+        }
+    }
+
+    private IEnumerator FadeGhost(SpriteRenderer sr, float fadeTime)
+    {
+        float t = 0;
+        Color startColor = sr.color;
+        while (t < fadeTime)
+        {
+            if (sr == null) yield break;
+            t += Time.deltaTime;
+            float alpha = Mathf.Lerp(startColor.a, 0f, t / fadeTime);
+            sr.color = new Color(startColor.r, startColor.g, startColor.b, alpha);
+            yield return null;
+        }
+        if (sr != null) Destroy(sr.gameObject);
     }
 }
 

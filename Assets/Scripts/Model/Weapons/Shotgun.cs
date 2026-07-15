@@ -10,8 +10,6 @@ public class Shotgun : Gun
     [Header("Shotgun Settings")]
     [SerializeField] private int pelletCount = 5;       // Số viên đạn mỗi lần bắn
     [SerializeField] private float spreadAngle = 40f;   // Tổng góc quạt (độ)
-    private float damage = 10f;
-
     protected override void Init()
     {
         fireRate    = 1.2f;
@@ -38,6 +36,7 @@ public class Shotgun : Gun
         // Ví dụ: 5 viên, spread 40° → -20°, -10°, 0°, +10°, +20°
         float startAngle = -spreadAngle / 2f;
         float step       = pelletCount > 1 ? spreadAngle / (pelletCount - 1) : 0f;
+        float totalDamage = ownerSoldier != null ? ownerSoldier.attack : 0f;
 
         for (int i = 0; i < pelletCount; i++)
         {
@@ -48,11 +47,11 @@ public class Shotgun : Gun
             Bullet bullet = bulletObj.GetComponent<Bullet>();
             if (bullet != null)
             {
-                bullet.Init(pelletDir);
+                bullet.Init(pelletDir, totalDamage);
             }
         }
 
-        Debug.Log($"Shotgun bắn! {pelletCount} viên, spread {spreadAngle}°, sát thương mỗi viên: {damage}");
+        Debug.Log($"Shotgun bắn! {pelletCount} viên, spread {spreadAngle}°, sát thương mỗi viên: {totalDamage}");
     }
 
     /// <summary>

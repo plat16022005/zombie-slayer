@@ -38,6 +38,9 @@ public class GameController : MonoBehaviour
     }
     void Update()
     {
+        // Tự động đồng bộ: Hễ game dừng (TimeScale = 0) thì toàn bộ âm thanh sẽ tự động dừng
+        AudioListener.pause = (Time.timeScale == 0f);
+
         // 🧮 Tính toán FPS
         fpsTimeLeft -= Time.unscaledDeltaTime;
         fpsAccumulator += Time.unscaledDeltaTime;

@@ -67,20 +67,4 @@ public class GameFeelManager : MonoBehaviour
             }
         }
     }
-
-    /// <summary>
-    /// Dừng đọng thời gian (Hit Stop) để tạo cảm giác uy lực khi trúng mục tiêu
-    /// </summary>
-    /// <param name="duration">Thời gian dừng (giây, khuyên dùng 0.05f - 0.1f)</param>
-    public void HitStop(float duration)
-    {
-        StartCoroutine(HitStopRoutine(duration));
-    }
-
-    private IEnumerator HitStopRoutine(float duration)
-    {
-        Time.timeScale = 0f; // Đóng băng thời gian
-        yield return new WaitForSecondsRealtime(duration); // Chờ thời gian thực
-        Time.timeScale = 1f; // Trả lại bình thường
-    }
 }

@@ -6,8 +6,6 @@ using UnityEngine;
 public class Pistol : Gun
 {
     [SerializeField] private GameObject bulletPrefab;
-    private float damage = 15f;
-
     protected override void Init()
     {
         fireRate    = 0.4f;
@@ -26,13 +24,14 @@ public class Pistol : Gun
         // Tạo viên đạn từ mũi súng
         if (bulletPrefab != null && bulletSpawnPoint != null)
         {
+            float totalDamage = ownerSoldier != null ? ownerSoldier.attack : 0f;
             GameObject bulletObj = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
             Bullet bullet = bulletObj.GetComponent<Bullet>();
             if (bullet != null)
             {
-                bullet.Init(direction);
+                bullet.Init(direction, totalDamage);
             }
-            Debug.Log($"Pistol bắn! Sát thương: {damage}");
+            Debug.Log($"Pistol bắn! Sát thương cao: {totalDamage}");
         }
     }
 }

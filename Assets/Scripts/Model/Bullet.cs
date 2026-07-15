@@ -3,7 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private float speed    = 15f;
-    [SerializeField] private float damage   = 10f;
+    private float damage = 0f;
     [SerializeField] private float lifeTime = 3f;
 
     [Header("VFX")]
@@ -25,9 +25,10 @@ public class Bullet : MonoBehaviour
             audioSource.maxDistance = 25f; // Xa quá 25 units -> không nghe thấy gì
         }
     }
-    public void Init(Vector2 direction)
+    public void Init(Vector2 direction, float damageOverride = -1f)
     {
         moveDirection = direction.normalized;
+        if (damageOverride >= 0f) damage = damageOverride;
 
         float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -58,10 +59,6 @@ public class Bullet : MonoBehaviour
         {
             enemy.TakeDame(damage);
             SpawnHitEffect();
-
-            // Kích hoạt Hit Stop (dừng hình chớp nhoáng)
-            if (GameFeelManager.Instance != null)
-                GameFeelManager.Instance.HitStop(0.03f);
 
             float destroyDelay = 0f;
             if (bulletSound != null && audioSource != null)

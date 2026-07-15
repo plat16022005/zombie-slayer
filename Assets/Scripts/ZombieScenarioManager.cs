@@ -26,6 +26,25 @@ public class ZombieScenarioManager : MonoBehaviour
         if (currentScenario != null && currentScenario.waves != null && currentScenario.waves.Length > 0)
         {
             StartCoroutine(PlayScenarioCoroutine());
+
+            // Hiển thị mục tiêu màn chơi
+            string objective = "";
+            switch (currentScenario.winCondition)
+            {
+                case ScenarioWinCondition.SurviveTime:
+                    objective = $"Sống sót trong {currentScenario.surviveTimeInSeconds} giây!";
+                    break;
+                case ScenarioWinCondition.KillAllZombies:
+                    objective = "Tiêu diệt toàn bộ thây ma!";
+                    break;
+                case ScenarioWinCondition.KillBoss:
+                    objective = "Sống sót và tiêu diệt Boss!";
+                    break;
+            }
+            if (PlayerUIManager.Instance != null && !string.IsNullOrEmpty(objective))
+            {
+                PlayerUIManager.Instance.ShowLevelObjective($"MỤC TIÊU: {objective}");
+            }
         }
         else
         {
@@ -77,7 +96,29 @@ public class ZombieScenarioManager : MonoBehaviour
     {
         isGameWon = true;
         Debug.Log($"<color=green>[VICTORY] CHIẾN THẮNG: {reason}</color>");
-        // TODO: Chèn logic mở giao diện Win Screen ở đây
+        
+        // Mở khóa màn chơi tiếp theo
+        if (DataGame.Instance != null && DataGame.Instance.HasProfile)
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (currentSceneName.StartsWith("Level"))
+            {
+                if (int.TryParse(currentSceneName.Replace("Level", ""), out int currentPlayingLevel))
+                {
+                    // Nếu màn chơi hiện hành là màn chơi cao nhất được mở, ta mở màn tiếp theo
+                    if (currentPlayingLevel == DataGame.Instance.CurrentLevel)
+                    {
+                        DataGame.Instance.UnlockLevel(currentPlayingLevel + 1);
+                    }
+                }
+            }
+        }
+
+        // Gọi UI hiển thị màn hình Win và dừng thời gian
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowVictoryPanel(reason);
+        }
     }
 
     private IEnumerator PlayScenarioCoroutine()

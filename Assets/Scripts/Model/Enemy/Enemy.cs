@@ -43,7 +43,7 @@ public abstract class Enemy : Character
     
     [Header("Spawn Settings")]
     [Tooltip("Thời gian đứng yên lúc mới sinh ra (dành cho animation mọc từ dưới đất)")]
-    [SerializeField] protected float spawnDelay = 1f;
+    [SerializeField] protected float spawnDelay = 0f;
 
     private SpriteRenderer[]    spriteRenderers;
     private MaterialPropertyBlock mpb;                        
@@ -56,7 +56,7 @@ public abstract class Enemy : Character
     protected override void Awake()
     {
         base.Awake();
-
+        Spawn();
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
 
@@ -312,7 +312,7 @@ public abstract class Enemy : Character
         if (col != null) col.enabled = false;
 
         // Bật animation Spawn (nếu có)
-        enemyAnimator?.PlaySpawn();
+        // enemyAnimator?.PlaySpawn();
 
         yield return new WaitForSeconds(spawnDelay);
 

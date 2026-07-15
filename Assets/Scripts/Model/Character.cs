@@ -10,6 +10,7 @@ public abstract class Character: MonoBehaviour
     public float attack { get; protected set; }
     public float speed { get; protected set; }
     public float defend { get; protected set; }
+    public float fireSpeed { get; set; } = 1f;
     protected abstract void Init();
     protected AudioSource audioSource;
     protected virtual void Awake()
@@ -34,7 +35,20 @@ public abstract class Character: MonoBehaviour
     public abstract void Attack();
     public virtual void TakeDame(float dame)
     {
-        hp -= dame;
+        dame = (float)System.Math.Round(dame, 1);
+
+        float multiplier = 100f / (100f + defend);
+        float finalDamage = dame * multiplier;
+
+        finalDamage = Mathf.Max(1f, finalDamage);
+
+        finalDamage = (float)System.Math.Round(finalDamage, 1);
+
+        hp -= finalDamage;
+        hp = (float)System.Math.Round(hp, 1);
+
+        Debug.Log($"{gameObject.name} bị nhận {finalDamage:F1} sát thương (Gốc: {dame}, Giáp: {defend}) - Máu còn: {hp:F1}");
+
         if (hp <= 0) Die();
     }
 

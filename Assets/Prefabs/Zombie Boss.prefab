@@ -1336,11 +1336,15 @@ MonoBehaviour:
   knockbackDecay: 18
   attackRange: 3
   attackCooldown: 1
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 8c90c9b939274f141a846001230d7c34, type: 3}
   enemyAnimator: {fileID: 1923041387986861282}
   hurtSound: {fileID: 8300000, guid: 46b779b794a7e39448e4ddc31ba949f9, type: 3}
   deathSound: {fileID: 8300000, guid: a61e5c8d834960c4b9ba2fa077192cf6, type: 3}
-  moanSounds: []
+  moanSounds:
+  - {fileID: 8300000, guid: 717000255868b764591639d431faf8da, type: 3}
+  - {fileID: 8300000, guid: f13b49d55ca92cd48b806566df4d1202, type: 3}
+  - {fileID: 8300000, guid: a3c5dff28d4a5814e848ca0b72c5796b, type: 3}
+  - {fileID: 8300000, guid: 73494bc80eedb7548907585228010ffb, type: 3}
   moanIntervalMin: 4
   moanIntervalMax: 10
   hitFlashDuration: 0.1
@@ -1352,13 +1356,17 @@ MonoBehaviour:
   spawnDelay: 1
   minSkillCooldown: 5
   maxSkillCooldown: 10
+  bossBGM: {fileID: 8300000, guid: 9806682cca77e3a4fa2e8b80fc27db6b, type: 3}
+  chargeSound: {fileID: 8300000, guid: 6805544a5455bf7479b1e148ac39e664, type: 3}
   chargeSpeedMultiplier: 3.5
   chargeDuration: 1.2
   chargeDamageMultiplier: 2
   chargeTrailVFX: {fileID: 1201468944217073966, guid: 1ade2700b1c3d63449b0260665337cf0, type: 3}
+  summonSound: {fileID: 8300000, guid: 35b173bbc0c716a43903c2db57c98059, type: 3}
   minionPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
   minionCount: 3
   summonVFXPrefab: {fileID: 7048810232778696685, guid: 295b3565ad26b314f876749adf3fa007, type: 3}
+  jumpSlamSound: {fileID: 8300000, guid: 430a7e27530e5d8439bef5cc3a0f6b0c, type: 3}
   jumpDuration: 1
   jumpAoERadius: 8
   jumpDamageMultiplier: 3

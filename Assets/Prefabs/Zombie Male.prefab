@@ -123,6 +123,7 @@ MonoBehaviour:
   deathSmokePrefab: {fileID: 896066540495802105, guid: 8f88f51636d715844a34a9b77c73fb10, type: 3}
   fadeWaitTime: 1
   fadeDuration: 2
+  spawnDelay: 0
 --- !u!50 &5574026255095952819
 Rigidbody2D:
   serializedVersion: 4

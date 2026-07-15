@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "959255341112",
+    "project_id": "zombie-slayer-38f65",
+    "storage_bucket": "zombie-slayer-38f65.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959255341112:android:759d4a03d8dc49f53e5ecd",
+        "android_client_info": {
+          "package_name": "com.plat.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "959255341112-gt2retqgoqcctajb72kktgpj1kamdbes.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.plat.dev",
+            "certificate_hash": "f542cc2ae274149bec82791a942a91ff2217c869"
+          }
+        },
+        {
+          "client_id": "959255341112-a9i3bnsar4pirtv7daqlnofbpn6pbupt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoa7YLFawuOu0hbWPSc3tN8HWGmzcLBtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "959255341112-a9i3bnsar4pirtv7daqlnofbpn6pbupt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

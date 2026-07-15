@@ -8,8 +8,11 @@ public class ZombieBoss : Zombie
     [SerializeField] private float minSkillCooldown = 5f;
     [Tooltip("Thời gian chờ tối đa giữa 2 lần tung chiêu")]
     [SerializeField] private float maxSkillCooldown = 10f;
+    [Tooltip("Nhạc nền riêng của Boss này")]
+    [SerializeField] private AudioClip bossBGM;
 
     [Header("Boss Skills: Charge (Húc)")]
+    [SerializeField] private AudioClip chargeSound;
     [SerializeField] private float chargeSpeedMultiplier = 3.5f;
     [SerializeField] private float chargeDuration = 1f;
     [SerializeField] private float chargeDamageMultiplier = 2f;
@@ -17,6 +20,7 @@ public class ZombieBoss : Zombie
     [SerializeField] private ParticleSystem chargeTrailVFX;
 
     [Header("Boss Skills: Summon (Gọi Đệ)")]
+    [SerializeField] private AudioClip summonSound;
     [Tooltip("Prefab của quái nhỏ (Zombie thường) để boss gọi ra")]
     [SerializeField] private GameObject minionPrefab;
     [SerializeField] private int minionCount = 3;
@@ -24,6 +28,7 @@ public class ZombieBoss : Zombie
     [SerializeField] private GameObject summonVFXPrefab;
 
     [Header("Boss Skills: Jump (Nhảy đập đất)")]
+    [SerializeField] private AudioClip jumpSlamSound;
     [Tooltip("Thời gian boss lơ lửng trên không")]
     [SerializeField] private float jumpDuration = 1f;
     [Tooltip("Bán kính sát thương khi chạm đất")]
@@ -42,9 +47,11 @@ public class ZombieBoss : Zombie
     private bool isJumping = false;
     
     private ZombieBossAnimator bossAnimator;
+    
 
     protected override void Init()
     {
+        spawnDelay = 3f;
         // Khởi tạo chỉ số cơ bản của Boss
         state = StateCharacter.Idle;
         hp = 1000;
@@ -66,6 +73,29 @@ public class ZombieBoss : Zombie
         {
             Vector2 randomOffset = Random.insideUnitCircle.normalized * 10f;
             transform.position = (Vector2)player.position + randomOffset;
+        }
+    }
+
+    public override void Spawn()
+    {
+        // Quét tất cả Enemy đang có trên bản đồ và tiêu diệt ngay lập tức
+        GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemyObj in allEnemies)
+        {
+            if (enemyObj == this.gameObject) continue; // Bỏ qua chính bản thân Boss
+            
+            Enemy enemy = enemyObj.GetComponent<Enemy>();
+            if (enemy != null && enemy.hp > 0)
+            {
+                enemy.TakeDame(99999f); // Sát thương khủng để chết ngay
+            }
+        }
+
+        base.Spawn();
+        // Gọi UI nháy đỏ màn hình và truyền bài nhạc của Boss vào để UI tự phát
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowBossWarning(bossBGM);
         }
     }
 
@@ -169,9 +199,9 @@ public class ZombieBoss : Zombie
         float originalSpeed = speed;
         speed *= chargeSpeedMultiplier;
         
-        // Phát tiếng gầm (dùng tạm tiếng đánh)
-        if (attackSound != null && audioSource != null)
-            audioSource.PlayOneShot(attackSound);
+        // Phát tiếng gầm
+        if (chargeSound != null && audioSource != null)
+            audioSource.PlayOneShot(chargeSound);
 
         yield return new WaitForSeconds(chargeDuration);
 
@@ -180,7 +210,7 @@ public class ZombieBoss : Zombie
         speed = originalSpeed;
         isCharging = false;
         isDashing = false;
-        // attackTimer = attackCooldown; // Reset đòn đánh thường để không đánh liền ngay lập tức
+        rb.velocity = Vector2.zero; // Dừng hẳn ngay lập tức để không bị trôi
         
         // Đặt lại thời gian ngẫu nhiên cho lần tung chiêu kế tiếp
         skillTimer = Random.Range(minSkillCooldown, maxSkillCooldown);
@@ -191,8 +221,8 @@ public class ZombieBoss : Zombie
         // Ép animation chạy
         enemyAnimator?.UpdateState(true);
 
-        // Lao thẳng theo hướng ĐÃ CHỐT cố định
-        rb.MovePosition(rb.position + chargeDirection * (speed * Time.fixedDeltaTime));
+        // Lao thẳng theo hướng ĐÃ CHỐT cố định (dùng velocity thay vì MovePosition để tính chính xác khoảng cách)
+        rb.velocity = chargeDirection * speed;
     }
 
     private void ChargeAttack()
@@ -233,10 +263,10 @@ public class ZombieBoss : Zombie
         if (bossAnimator != null) bossAnimator.PlaySummon();
         else enemyAnimator?.PlayAttack();
         
-        // Tiếng gọi đệ (dùng tiếng rên rỉ ngẫu nhiên)
-        if (moanSounds != null && moanSounds.Length > 0 && audioSource != null)
+        // Tiếng gọi đệ
+        if (summonSound != null && audioSource != null)
         {
-            audioSource.PlayOneShot(moanSounds[Random.Range(0, moanSounds.Length)]);
+            audioSource.PlayOneShot(summonSound);
         }
 
         yield return new WaitForSeconds(1f);
@@ -334,8 +364,8 @@ public class ZombieBoss : Zombie
 
         // Phát hoạt ảnh và âm thanh đập đất
         // enemyAnimator?.PlayAttack();
-        if (attackSound != null && audioSource != null)
-            audioSource.PlayOneShot(attackSound);
+        if (jumpSlamSound != null && audioSource != null)
+            audioSource.PlayOneShot(jumpSlamSound);
 
         // Sinh ra hiệu ứng khói bụi bùng nổ
         if (jumpSlamVFXPrefab != null)
@@ -399,24 +429,21 @@ public class ZombieBoss : Zombie
         warningObj.transform.position = position;
 
         LineRenderer lr = warningObj.AddComponent<LineRenderer>();
-        lr.startWidth = 0.05f;
-        lr.endWidth = 0.05f;
-        // Dùng shader mặc định để vẽ màu cơ bản
+        // Sử dụng thủ thuật LineRenderer siêu ngắn + numCapVertices để vẽ hình tròn ĐẶC (Tô kín)
+        lr.startWidth = radius * 2f;
+        lr.endWidth = radius * 2f;
+        lr.numCapVertices = 50; // Bo tròn hoàn hảo 2 đầu
+        lr.positionCount = 2;
+        
+        // Hai điểm cực gần nhau sẽ tạo thành một hình tròn hoàn chỉnh
+        lr.SetPosition(0, new Vector3(position.x, position.y, 0f));
+        lr.SetPosition(1, new Vector3(position.x + 0.001f, position.y, 0f));
+
         lr.material = new Material(Shader.Find("Sprites/Default"));
-        lr.startColor = Color.red;
-        lr.endColor = Color.red;
-        lr.positionCount = 51; // 50 đoạn = 1 vòng tròn
+        lr.startColor = new Color(1f, 0f, 0f, 0.4f); // Đỏ tô kín (bán trong suốt)
+        lr.endColor = new Color(1f, 0f, 0f, 0.4f);
         lr.useWorldSpace = true;
         lr.sortingOrder = -10; // Vẽ chìm dưới đất
-
-        float angle = 0f;
-        for (int i = 0; i < 51; i++)
-        {
-            float x = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
-            float y = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
-            lr.SetPosition(i, new Vector3(position.x + x, position.y + y, 0f));
-            angle += (360f / 50f);
-        }
 
         // Tự động xóa vòng tròn khi Boss đáp đất
         Destroy(warningObj, duration);

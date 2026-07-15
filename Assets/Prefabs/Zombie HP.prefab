@@ -300,6 +300,7 @@ MonoBehaviour:
   deathSmokePrefab: {fileID: 896066540495802105, guid: 8f88f51636d715844a34a9b77c73fb10, type: 3}
   fadeWaitTime: 1
   fadeDuration: 2
+  spawnDelay: 0
 --- !u!114 &8590181909994134260
 MonoBehaviour:
   m_ObjectHideFlags: 0

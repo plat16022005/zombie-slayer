@@ -51,8 +51,11 @@ public class Boom : MonoBehaviour
     /// <summary>
     /// Ném boom tới một vị trí đích cụ thể
     /// </summary>
-    public void Throw(Vector2 targetPosition)
+    public void Throw(Vector2 targetPosition, float playerAttack = 10f)
     {
+        // Boom scale theo: attack * 10
+        damage = playerAttack * 10f;
+
         // Xoay hướng boom bay tới đích
         Vector2 dir = targetPosition - (Vector2)transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
