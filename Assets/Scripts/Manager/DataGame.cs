@@ -140,4 +140,25 @@ public class DataGame : MonoBehaviour
             }
         }
     }
+
+    public void AddGold(int amount)
+    {
+        Gold += amount;
+        
+        FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+        if (auth != null && auth.CurrentUser != null)
+        {
+            FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+            string uid = auth.CurrentUser.UserId;
+            
+            Dictionary<string, object> updates = new Dictionary<string, object>
+            {
+                { "gold", Gold }
+            };
+            db.Collection("Users").Document(uid).SetAsync(updates, SetOptions.MergeAll).ContinueWithOnMainThread(task => {
+                if (task.IsFaulted) Debug.LogError("Lỗi khi lưu vàng: " + task.Exception);
+                else Debug.Log($"Đã cộng {amount} vàng thành công! Tổng vàng: {Gold}");
+            });
+        }
+    }
 }

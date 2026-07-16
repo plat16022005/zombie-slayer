@@ -20,6 +20,10 @@ public class ZombieScenarioManager : MonoBehaviour
     private float survivalTimer = 0f;
     private bool isBossSpawned = false;
     private GameObject activeBoss;
+    
+    // Boss Info Cache
+    private string cachedBossName = "";
+    private Sprite cachedBossAvatar = null;
 
     private void Start()
     {
@@ -56,6 +60,51 @@ public class ZombieScenarioManager : MonoBehaviour
     {
         if (isGameWon || currentScenario == null) return;
         CheckWinCondition();
+        UpdateProgressUI();
+    }
+
+    private void UpdateProgressUI()
+    {
+        if (PlayerUIManager.Instance == null) return;
+
+        switch (currentScenario.winCondition)
+        {
+            case ScenarioWinCondition.SurviveTime:
+                float timeLeft = Mathf.Max(0, currentScenario.surviveTimeInSeconds - survivalTimer);
+                PlayerUIManager.Instance.UpdateLevelProgress($"Thời gian: {Mathf.CeilToInt(timeLeft)}s");
+                break;
+
+            case ScenarioWinCondition.KillAllZombies:
+                if (currentScenario.waves != null && currentScenario.waves.Length > 0)
+                {
+                    int totalWaves = currentScenario.waves.Length;
+                    if (hasSpawnedAllWaves)
+                    {
+                        PlayerUIManager.Instance.UpdateLevelProgress($"Tiêu diệt toàn bộ Zombie!");
+                    }
+                    else
+                    {
+                        PlayerUIManager.Instance.UpdateLevelProgress($"Wave: {currentWaveIndex + 1}/{totalWaves}");
+                    }
+                }
+                break;
+
+            case ScenarioWinCondition.KillBoss:
+                if (isBossSpawned && activeBoss != null)
+                {
+                    PlayerUIManager.Instance.UpdateLevelProgress($"Tiêu diệt Boss!");
+                    Enemy bossScript = activeBoss.GetComponent<Enemy>();
+                    if (bossScript != null)
+                    {
+                        PlayerUIManager.Instance.UpdateBossHealth(bossScript.hp, bossScript.maxHp, cachedBossName, cachedBossAvatar);
+                    }
+                }
+                else if (!isBossSpawned)
+                {
+                    PlayerUIManager.Instance.UpdateLevelProgress($"Sống đến khi Boss xuất hiện!");
+                }
+                break;
+        }
     }
 
     private void CheckWinCondition()
@@ -97,7 +146,9 @@ public class ZombieScenarioManager : MonoBehaviour
         isGameWon = true;
         Debug.Log($"<color=green>[VICTORY] CHIẾN THẮNG: {reason}</color>");
         
-        // Mở khóa màn chơi tiếp theo
+        int earnedGold = 0;
+        
+        // Mở khóa màn chơi tiếp theo và tặng vàng
         if (DataGame.Instance != null && DataGame.Instance.HasProfile)
         {
             string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -105,19 +156,23 @@ public class ZombieScenarioManager : MonoBehaviour
             {
                 if (int.TryParse(currentSceneName.Replace("Level", ""), out int currentPlayingLevel))
                 {
-                    // Nếu màn chơi hiện hành là màn chơi cao nhất được mở, ta mở màn tiếp theo
+                    // Nếu màn chơi hiện hành là màn chơi cao nhất được mở, ta mở màn tiếp theo và tặng vàng (chỉ nhận vàng lần đầu)
                     if (currentPlayingLevel == DataGame.Instance.CurrentLevel)
                     {
                         DataGame.Instance.UnlockLevel(currentPlayingLevel + 1);
+                        
+                        earnedGold = 1000;
+                        DataGame.Instance.AddGold(earnedGold);
                     }
                 }
             }
         }
 
-        // Gọi UI hiển thị màn hình Win và dừng thời gian
+        // Gọi UI hiển thị màn hình Win, số vàng nhận được và dừng thời gian
         if (PlayerUIManager.Instance != null)
         {
-            PlayerUIManager.Instance.ShowVictoryPanel(reason);
+            PlayerUIManager.Instance.ShowVictoryPanel(reason, earnedGold);
+            PlayerUIManager.Instance.HideBossHealth(); // Ẩn thanh máu Boss khi thắng
         }
     }
 
@@ -175,6 +230,20 @@ public class ZombieScenarioManager : MonoBehaviour
         {
             activeBoss = zombie;
             isBossSpawned = true;
+            
+            // Lấy tên từ Prefab
+            cachedBossName = prefab.name;
+            
+            // Lấy Avatar từ GameObject con tên "Head" (kể cả nằm sâu bên trong)
+            SpriteRenderer[] allSprites = zombie.GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (SpriteRenderer sr in allSprites)
+            {
+                if (sr.gameObject.name == "Head")
+                {
+                    cachedBossAvatar = sr.sprite;
+                    break;
+                }
+            }
         }
     }
 

@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 37701732}
   - component: {fileID: 37701731}
   - component: {fileID: 37701730}
+  - component: {fileID: 37701733}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -295,6 +296,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 37701728}
   m_CullTransparentMesh: 1
+--- !u!114 &37701733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 37701728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: ee4f7c5bcc9e58241a770fe0ec5a282b, type: 3}
 --- !u!1 &44103101
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,7 +806,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 652.7394, y: -129.81528}
+  m_AnchoredPosition: {x: 647, y: -143}
   m_SizeDelta: {x: 876.5214, y: 724.3694}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &103954077
@@ -949,6 +963,7 @@ GameObject:
   - component: {fileID: 184544640}
   - component: {fileID: 184544639}
   - component: {fileID: 184544638}
+  - component: {fileID: 184544641}
   m_Layer: 5
   m_Name: LOGIN
   m_TagString: Untagged
@@ -1082,6 +1097,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 184544636}
   m_CullTransparentMesh: 1
+--- !u!114 &184544641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184544636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: 669db74d4b19dc842aa2d6dfcc90547b, type: 3}
 --- !u!1 &261258310
 GameObject:
   m_ObjectHideFlags: 0
@@ -1648,7 +1676,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1666,7 +1694,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 72
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1782,7 +1810,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1800,7 +1828,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 72
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1884,7 +1912,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -426, y: -185}
+  m_AnchoredPosition: {x: -378, y: -182}
   m_SizeDelta: {x: 578.7098, y: 327.0593}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &419285553
@@ -2225,6 +2253,7 @@ GameObject:
   - component: {fileID: 484524715}
   - component: {fileID: 484524714}
   - component: {fileID: 484524713}
+  - component: {fileID: 484524716}
   m_Layer: 5
   m_Name: REGISTER
   m_TagString: Untagged
@@ -2358,6 +2387,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 484524711}
   m_CullTransparentMesh: 1
+--- !u!114 &484524716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484524711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: 669db74d4b19dc842aa2d6dfcc90547b, type: 3}
 --- !u!1 &522951133
 GameObject:
   m_ObjectHideFlags: 0
@@ -2504,6 +2546,7 @@ GameObject:
   - component: {fileID: 523071264}
   - component: {fileID: 523071263}
   - component: {fileID: 523071262}
+  - component: {fileID: 523071265}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -2613,6 +2656,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523071260}
   m_CullTransparentMesh: 1
+--- !u!114 &523071265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523071260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: ee4f7c5bcc9e58241a770fe0ec5a282b, type: 3}
 --- !u!1 &603427355
 GameObject:
   m_ObjectHideFlags: 0
@@ -3532,12 +3588,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 1000
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -4143,6 +4199,7 @@ GameObject:
   - component: {fileID: 1452476115}
   - component: {fileID: 1452476114}
   - component: {fileID: 1452476113}
+  - component: {fileID: 1452476116}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -4276,6 +4333,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1452476111}
   m_CullTransparentMesh: 1
+--- !u!114 &1452476116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452476111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: ee4f7c5bcc9e58241a770fe0ec5a282b, type: 3}
 --- !u!1 &1536479364
 GameObject:
   m_ObjectHideFlags: 0
@@ -5747,6 +5817,7 @@ GameObject:
   - component: {fileID: 1965102557}
   - component: {fileID: 1965102556}
   - component: {fileID: 1965102555}
+  - component: {fileID: 1965102558}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -5880,6 +5951,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965102553}
   m_CullTransparentMesh: 1
+--- !u!114 &1965102558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965102553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: ee4f7c5bcc9e58241a770fe0ec5a282b, type: 3}
 --- !u!1 &1988190760
 GameObject:
   m_ObjectHideFlags: 0
@@ -5892,6 +5976,7 @@ GameObject:
   - component: {fileID: 1988190764}
   - component: {fileID: 1988190763}
   - component: {fileID: 1988190762}
+  - component: {fileID: 1988190765}
   m_Layer: 5
   m_Name: GOOGLE
   m_TagString: Untagged
@@ -6002,6 +6087,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988190760}
   m_CullTransparentMesh: 1
+--- !u!114 &1988190765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988190760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d384a4ddbf582f468d2514d7a0596e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: 669db74d4b19dc842aa2d6dfcc90547b, type: 3}
 --- !u!1 &1995321106
 GameObject:
   m_ObjectHideFlags: 0

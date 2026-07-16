@@ -65,17 +65,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameController.cs" />
+    <Compile Include="Assets\Scripts\Config\RunSoundButton.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\FixedJoystick.cs" />
     <Compile Include="Assets\Scripts\Model\AutoDestroy.cs" />
     <Compile Include="Assets\Scripts\Model\Character.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\ZombieSpeed.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\Zombie.cs" />
+    <Compile Include="Assets\Scripts\Skill\SpinnerController.cs" />
+    <Compile Include="Assets\Scripts\Model\EXP\ExpDatabase.cs" />
+    <Compile Include="Assets\Scripts\Model\EXP\EXP1.cs" />
     <Compile Include="Assets\Scripts\UI\AuthUIManager.cs" />
+    <Compile Include="Assets\Scripts\Model\Items\MagnetItem.cs" />
     <Compile Include="Assets\Scripts\Manager\DataGame.cs" />
     <Compile Include="Assets\GoogleSignIn\Future.cs" />
+    <Compile Include="Assets\Scripts\Skill\UAV.cs" />
     <Compile Include="Assets\GoogleSignIn\Impl\BaseObject.cs" />
     <Compile Include="Assets\GoogleSignIn\Impl\GoogleSignInImpl.cs" />
     <Compile Include="Assets\Scripts\Model\Bullet.cs" />
+    <Compile Include="Assets\Scripts\Model\EXP\ExpSpawner.cs" />
     <Compile Include="Assets\GoogleSignIn\GoogleSignIn.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\FloatingJoystick.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\DynamicJoystick.cs" />
@@ -83,17 +90,22 @@
     <Compile Include="Assets\Scripts\Model\SoldierAnimator.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\ZombieBossAnimator.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Base\Joystick.cs" />
+    <Compile Include="Assets\Scripts\Skill\AttackPlane.cs" />
     <Compile Include="Assets\GoogleSignIn\GoogleSignInStatusCode.cs" />
     <Compile Include="Assets\Scripts\Model\Weapons\Shotgun.cs" />
     <Compile Include="Assets\GoogleSignIn\GoogleSignInUser.cs" />
     <Compile Include="Assets\GoogleSignIn\GoogleSignInConfiguration.cs" />
     <Compile Include="Assets\Joystick Pack\Examples\JoystickPlayerExample.cs" />
+    <Compile Include="Assets\Scripts\Skill\AirSupportSkill.cs" />
+    <Compile Include="Assets\Scripts\Model\EXP\ExpGem.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\ZombieBoss.cs" />
     <Compile Include="Assets\GoogleSignIn\Impl\NativeFuture.cs" />
     <Compile Include="Assets\Firebase\FirebaseApp\Internal\FirebaseInterops.cs" />
     <Compile Include="Assets\Scripts\Model\Gun.cs" />
     <Compile Include="Assets\Scripts\Model\Weapons\Rifle.cs" />
     <Compile Include="Assets\Joystick Pack\Scripts\Joysticks\VariableJoystick.cs" />
+    <Compile Include="Assets\Scripts\Model\CardData.cs" />
+    <Compile Include="Assets\Scripts\Skill\AuraSkill.cs" />
     <Compile Include="Assets\Scripts\GameFeelManager.cs" />
     <Compile Include="Assets\Scripts\Model\Weapons\Pistol.cs" />
     <Compile Include="Assets\Firebase\FirebaseApp\Internal\HttpHelpers.cs" />
@@ -102,16 +114,25 @@
     <Compile Include="Assets\Scripts\EnemySpawner.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\ZombieHP.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\Model\Items\Item.cs" />
+    <Compile Include="Assets\Scripts\InfiniteObstacleSpawner.cs" />
+    <Compile Include="Assets\Scripts\Model\Items\HealItem.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\Enemy.cs" />
     <Compile Include="Assets\GoogleSignIn\Impl\SignInHelperObject.cs" />
     <Compile Include="Assets\Scripts\ZombieScenarioManager.cs" />
+    <Compile Include="Assets\Scripts\Skill\Spinner.cs" />
+    <Compile Include="Assets\Scripts\Skill\LandmineSkill.cs" />
     <Compile Include="Assets\Scripts\UI\UpgradeUIManager.cs" />
+    <Compile Include="Assets\Scripts\AStarPathfinding.cs" />
     <Compile Include="Assets\Scripts\ZombieScenario.cs" />
     <Compile Include="Assets\Scripts\InfiniteBackground.cs" />
     <Compile Include="Assets\Scripts\Model\Enemy\EnemyAnimator.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerUIManager.cs" />
     <Compile Include="Assets\Scripts\Model\Soldier.cs" />
+    <Compile Include="Assets\Scripts\Manager\LevelUpManager.cs" />
     <Compile Include="Assets\Scripts\UI\LoadingManager.cs" />
+    <Compile Include="Assets\Scripts\Skill\Landmine.cs" />
+    <Compile Include="Assets\Scripts\Model\EXP\MagnetField.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -1179,12 +1200,12 @@
       <HintPath>Library\ScriptAssemblies\Unity.2D.Psdimporter.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.VisualScripting.State.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Mobile.AndroidLogcat.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Mobile.AndroidLogcat.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.State.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Mathematics">

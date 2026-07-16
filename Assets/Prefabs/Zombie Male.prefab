@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knockbackDecay: 18
-  attackRange: 1
+  attackRange: 1.5
   attackCooldown: 1
   attackSound: {fileID: 8300000, guid: 87aea183745034c4abb4642bd3d8c560, type: 3}
   enemyAnimator: {fileID: 7456627396465762168}
@@ -124,6 +124,19 @@ MonoBehaviour:
   fadeWaitTime: 1
   fadeDuration: 2
   spawnDelay: 0
+  expDatabase: {fileID: 11400000, guid: c3dc9c993729e794585c02b93ab430ca, type: 2}
+  expDropAmount: 20
+  healItemPrefab: {fileID: 7488553770164943290, guid: c26097a0f33589946866cfbc32555ca1, type: 3}
+  magnetItemPrefab: {fileID: 1260469422666198249, guid: 13b420e45dd7f6b45a8e7e5496427244, type: 3}
+  itemDropChance: 0.01
+  useAStar: 0
+  useRaycast: 1
+  pathUpdateInterval: 1
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  rayDistance: 1
+  rayRadius: 2
 --- !u!50 &5574026255095952819
 Rigidbody2D:
   serializedVersion: 4

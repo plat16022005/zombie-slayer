@@ -46,6 +46,21 @@ public class MainMenuManager : MonoBehaviour
         {
             submitNameButton.onClick.AddListener(OnSubmitName);
         }
+
+        if (nameInputField != null)
+        {
+            nameInputField.characterLimit = 15; // Giới hạn 15 ký tự
+            nameInputField.onValidateInput += ValidateNameInput; // Lọc ký tự khi gõ
+        }
+    }
+
+    private char ValidateNameInput(string text, int charIndex, char addedChar)
+    {
+        if (char.IsLetterOrDigit(addedChar) && addedChar < 128)
+        {
+            return addedChar;
+        }
+        return '\0';
     }
 
     private void CheckUserData()
@@ -58,8 +73,7 @@ public class MainMenuManager : MonoBehaviour
             if (DataGame.Instance.HasProfile)
             {
                 Debug.Log($"Welcome back, {DataGame.Instance.Username}!");
-                if (usernameText != null) usernameText.text = DataGame.Instance.Username;
-                if (coinText != null) coinText.text = DataGame.Instance.Gold.ToString();
+                UpdateProfileUI();
                 
                 SetupLevelButtons();
             }
@@ -84,9 +98,9 @@ public class MainMenuManager : MonoBehaviour
             return;
         }
 
-        if (username.Length < 3)
+        if (username.Length < 3 || username.Length > 15)
         {
-            SetStatus("Tên phải có ít nhất 3 ký tự!", Color.red);
+            SetStatus("Tên phải từ 3 đến 15 ký tự!", Color.red);
             return;
         }
 
@@ -185,8 +199,7 @@ public class MainMenuManager : MonoBehaviour
 
                 // Ẩn panel nhập tên
                 if (nameInputPanel != null) nameInputPanel.SetActive(false);
-                if (usernameText != null) usernameText.text = DataGame.Instance.Username;
-                if (coinText != null) coinText.text = DataGame.Instance.Gold.ToString();
+                UpdateProfileUI();
                 
                 SetupLevelButtons();
             }
@@ -268,5 +281,18 @@ public class MainMenuManager : MonoBehaviour
     public void StartThisLevel(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+    }
+    public void Logout()
+    {
+        FirebaseAuthManager.Instance.SignOut();
+    }
+
+    public void UpdateProfileUI()
+    {
+        if (DataGame.Instance != null && DataGame.Instance.HasProfile)
+        {
+            if (usernameText != null) usernameText.text = DataGame.Instance.Username;
+            if (coinText != null) coinText.text = DataGame.Instance.Gold.ToString();
+        }
     }
 }

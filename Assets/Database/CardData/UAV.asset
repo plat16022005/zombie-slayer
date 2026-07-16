@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20061562f027f2741985072d742f2600, type: 3}
+  m_Name: UAV
+  m_EditorClassIdentifier: 
+  cardName: UAV
+  description: "T\u1EA1o ra m\u1ED9t UAV h\u1ED7 tr\u1EE3 ng\u01B0\u1EDDi ch\u01A1i.
+    UAV s\u1EBD b\u1EAFn lo\u1EA1t 10 vi\xEAn \u0111\u1EA1n v\xE0o Enemy ng\u1EABu
+    nhi\xEAn quanh ng\u01B0\u1EDDi ch\u01A1i. CD: 5s"
+  upgradeDescriptions:
+  - "S\u1ED1 l\u01B0\u1EE3ng \u0111\u1EA1n b\u1EAFn ra l\xE0 15 vi\xEAn"
+  - "CD b\u1EAFn c\xF2n 4s, t\u0103ng 20% s\xE1t th\u01B0\u01A1ng "
+  - "S\u1ED1 l\u01B0\u1EE3ng \u0111\u1EA1n b\u1EAFn ra l\xE0 20 vi\xEAn, t\u1EA7m
+    \u0111\xE1nh xa h\u01A1n."
+  - "CD b\u1EAFn c\xF2n 3s, t\u0103ng 50% s\xE1t th\u01B0\u01A1ng "
+  icon: {fileID: 21300000, guid: 586b6c415a7d8b749b5f2122cfbdefe5, type: 3}
+  isBuff: 0
+  buffType: 0
+  buffAmount: 0
+  isPercentage: 0
+  skillPrefab: {fileID: 329714356809624061, guid: 54caaada44ea4e44c9403d80e6b4b6fd, type: 3}
+  maxLevel: 5

@@ -17,6 +17,10 @@ public abstract class Character: MonoBehaviour
     {
         Init();
         rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {

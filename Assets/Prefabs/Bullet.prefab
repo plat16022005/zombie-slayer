@@ -104,8 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cd257b45d8d1142a9a82853465682e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
-  damage: 10
+  speed: 50
   lifeTime: 3
   hitEffectPrefab: {fileID: 6274970769164657228, guid: 34df24af255435d4e9b0e84a1828352a, type: 3}
   bulletSound: {fileID: 8300000, guid: 4bbf6268d7b682048b71a1088ba15985, type: 3}

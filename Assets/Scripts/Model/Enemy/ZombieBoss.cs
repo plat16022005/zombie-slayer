@@ -46,6 +46,11 @@ public class ZombieBoss : Zombie
     private bool isSummoning = false;
     private bool isJumping = false;
     
+    [Header("Boss Arena")]
+    [Tooltip("Prefab của lồng giam nhốt Player và Boss")]
+    [SerializeField] private GameObject arenaPrefab;
+    private GameObject activeArena;
+
     private ZombieBossAnimator bossAnimator;
     
 
@@ -54,9 +59,10 @@ public class ZombieBoss : Zombie
         spawnDelay = 3f;
         // Khởi tạo chỉ số cơ bản của Boss
         state = StateCharacter.Idle;
-        hp = 1000;
-        attack = 15;
-        speed = 7;
+        maxHp = 20000;
+        hp = maxHp;
+        attack = 25;
+        speed = 8;
         defend = 0;
         moanTimer = Random.Range(moanIntervalMin, moanIntervalMax);
         
@@ -99,6 +105,35 @@ public class ZombieBoss : Zombie
         }
     }
 
+    protected virtual void Start()
+    {
+        // Tắt các Spawner đẻ vật thể/ngọc rác trên bản đồ để tránh vướng víu đánh Boss
+        InfiniteObstacleSpawner[] obsSpawners = FindObjectsOfType<InfiniteObstacleSpawner>();
+        foreach (var obs in obsSpawners) obs.enabled = false;
+
+        ExpSpawner[] expSpawners = FindObjectsOfType<ExpSpawner>();
+        foreach (var exp in expSpawners) exp.enabled = false;
+
+        if (arenaPrefab != null)
+        {
+            activeArena = Instantiate(arenaPrefab, transform.position, Quaternion.identity);
+        }
+    }
+
+    protected override void Die()
+    {
+        if (hp <= 0 && !isDead)
+        {
+            // Xóa lồng khi boss chết
+            if (activeArena != null)
+            {
+                Destroy(activeArena);
+            }
+            
+            // Gọi hàm Die gốc của Enemy
+            base.Die();
+        }
+    }
 
     protected override void Update()
     {

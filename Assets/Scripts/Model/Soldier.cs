@@ -62,11 +62,33 @@ public class Soldier : Character
     [SerializeField] private float     dashCooldown = 5f;   // Thời gian hồi chiêu
     [SerializeField] private AudioClip dashSound;           // Âm thanh lướt
     [SerializeField] private TrailRenderer dashTrail;       // Vệt lướt (Trail Renderer)
+    
+    // ──── Level System ────
+    [Header("Level System")]
+    [SerializeField] private int currentLevel = 1;
+    [SerializeField] private int currentExp = 0;
+    [SerializeField] private int maxExpThreshold = 100;
+    [SerializeField] private AudioClip levelUpSound;
+    [SerializeField] private ParticleSystem levelUpVFX;
+    
+    [Tooltip("Vị trí sẽ chứa các Skill được tạo ra (nếu để trống sẽ dùng Player)")]
+    public Transform skillHolder;
+
+    [Header("Buff Modifiers")]
+    public float bonusExpMultiplier = 1f;
+    public float hpRegenPercentPerSecond = 0f; // Lượng máu hồi mỗi giây (Theo % máu tối đa)
 
     private float dashCooldownTimer = 0f;
     private float dashTimer = 0f;
     private bool  isDashing = false;
     private Vector2 dashDirection;
+
+    // Lưu trữ các chỉ số gốc để cộng % không bị snowball (không cộng dồn theo cấp số nhân)
+    private float baseMaxHp;
+    private float baseAttack;
+    private float baseSpeed;
+    private float baseDefend;
+    private float baseMagnetRadius = -1f;
 
     protected override void Init()
     {
@@ -86,6 +108,11 @@ public class Soldier : Character
             speed = 10;
             defend = 5;
         }
+
+        baseMaxHp = maxHp;
+        baseAttack = attack;
+        baseSpeed = speed;
+        baseDefend = defend;
         
         hp = maxHp; // Khởi tạo máu hiện tại bằng máu tối đa
         fireSpeed = 1f; // Tốc độ bắn cơ bản ban đầu là 1x (có thể thay đổi trong game)
@@ -104,12 +131,26 @@ public class Soldier : Character
 
         // Thu thập tất cả SpriteRenderer trên người + vũ khí (dùng cho hit flash)
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+        // Cập nhật UI kinh nghiệm ban đầu
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.UpdateExpUI(currentExp, maxExpThreshold, currentLevel);
+        }
     }
 
     protected override void Update()
     {
         base.Update();
         
+        // Hồi máu theo thời gian (% máu tối đa)
+        if (hpRegenPercentPerSecond > 0 && hp < maxHp && !isDead)
+        {
+            float totalRegen = maxHp * hpRegenPercentPerSecond;
+            hp += totalRegen * Time.deltaTime;
+            if (hp > maxHp) hp = maxHp;
+        }
+
         // Cập nhật đếm ngược thời gian hồi Boom
         if (boomCooldownTimer > 0)
         {
@@ -136,9 +177,117 @@ public class Soldier : Character
         // Cập nhật animation mỗi frame
         soldierAnimator?.UpdateState(rb.velocity, isDashing, idleSkinIndex);
     }
+    
+    public void AddExp(int amount)
+    {
+        if (isDead) return;
+        
+        // Áp dụng hệ số buff phần trăm kinh nghiệm
+        int finalAmount = Mathf.RoundToInt(amount * bonusExpMultiplier);
+        currentExp += finalAmount;
+        
+        while (currentExp >= maxExpThreshold)
+        {
+            LevelUp();
+        }
+
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.UpdateExpUI(currentExp, maxExpThreshold, currentLevel);
+        }
+    }
+
+    public void IncreaseMagnetRadius(float amount, bool isPercentage = false)
+    {
+        MagnetField magnet = GetComponentInChildren<MagnetField>();
+        if (magnet != null)
+        {
+            CircleCollider2D col = magnet.GetComponent<CircleCollider2D>();
+            if (col != null)
+            {
+                if (baseMagnetRadius < 0) baseMagnetRadius = col.radius;
+                
+                float oldRadius = col.radius;
+                if (isPercentage) col.radius += baseMagnetRadius * amount;
+                else col.radius += amount;
+                
+                Debug.Log($"[Magnet] Bán kính hút đã tăng từ {oldRadius} lên {col.radius}");
+            }
+            else
+            {
+                Debug.LogWarning("[Magnet] Tìm thấy MagnetField nhưng không có CircleCollider2D!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[Magnet] Lỗi: Không tìm thấy object nào là con của Player chứa script MagnetField!");
+        }
+    }
+
+    public void AddMaxHp(float amount, bool isPercentage = false)
+    {
+        float actualAmount = isPercentage ? baseMaxHp * amount : amount;
+        maxHp += actualAmount;
+        hp += actualAmount;
+    }
+
+    public void Heal(float amount, bool isPercentage = false)
+    {
+        float actualAmount = isPercentage ? maxHp * amount : amount;
+        hp += actualAmount;
+        if (hp > maxHp) hp = maxHp;
+    }
+
+    public void AddAttack(float amount, bool isPercentage = false)
+    {
+        attack += isPercentage ? baseAttack * amount : amount;
+    }
+
+    public void AddSpeed(float amount, bool isPercentage = false)
+    {
+        speed += isPercentage ? baseSpeed * amount : amount;
+    }
+
+    public void AddHpRegen(float amount)
+    {
+        // Luôn coi amount là phần trăm (VD: 0.01 = 1%)
+        hpRegenPercentPerSecond += amount;
+    }
+
+    public void AddDefend(float amount, bool isPercentage = false)
+    {
+        defend += isPercentage ? baseDefend * amount : amount;
+    }
+
+    private void LevelUp()
+    {
+        currentExp -= maxExpThreshold;
+        currentLevel++;
+        maxExpThreshold = Mathf.RoundToInt(maxExpThreshold * 1.5f); // Tăng 50% yêu cầu exp cho cấp tiếp theo
+
+        if (levelUpSound != null && audioSource != null)
+            audioSource.PlayOneShot(levelUpSound);
+            
+        if (levelUpVFX != null)
+            levelUpVFX.Play();
+
+        Debug.Log($"LÊN CẤP {currentLevel}!");
+
+        if (LevelUpManager.Instance != null)
+        {
+            LevelUpManager.Instance.ShowLevelUpUI();
+        }
+    }
+    
     public override void TakeDame(float dame)
     {
         base.TakeDame(dame);
+
+        // Hiệu ứng máu viền màn hình (Vignette)
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowBloodVignette();
+        }
 
         // Chỉ play hit khi vẫn còn sống (tránh đè lên animation Die)
         if (hp > 0)
@@ -337,6 +486,12 @@ public class Soldier : Character
             soldierAnimator?.PlayDie();
             if (dieSound != null && audioSource != null)
                 audioSource.PlayOneShot(dieSound);
+
+            // Hiện Panel Game Over sau khi diễn xong animation chết
+            if (PlayerUIManager.Instance != null)
+            {
+                PlayerUIManager.Instance.ShowGameOverPanel(dieDestroyDelay);
+            }
 
             // Destroy sau khi animation chết chạy xong
             Destroy(gameObject, dieDestroyDelay);

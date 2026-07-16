@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1811984665507858082}
   - component: {fileID: 4317347591665090092}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 3104833400928968619}
   - component: {fileID: 4959524346929528524}
   - component: {fileID: 8504965238702519166}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: ZombieBossAsset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +203,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8693766305764682606}
   - component: {fileID: 5000843179125183128}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: left_leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3029635857162852542}
   - component: {fileID: 9117692438375785994}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1076682461533695523}
   - component: {fileID: 9063329178786614252}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: left_arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -457,7 +457,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9040281688499503739}
   - component: {fileID: 7616869445841458675}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -542,7 +542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3245012717252833486}
   - component: {fileID: 2325939621954602727}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_hip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -627,7 +627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 196613289862909928}
   - component: {fileID: 6113189607539059708}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -712,7 +712,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5657353091216838862}
   - component: {fileID: 6202765735021328754}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -796,7 +796,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794478113401285875}
   - component: {fileID: 1812489131112646926}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: pelvis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -882,7 +882,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4696767613499943840}
   - component: {fileID: 5636691934832121664}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: left_hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -966,7 +966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2423850553703369268}
   - component: {fileID: 8121038662219961050}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1052,7 +1052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3309669946255638660}
   - component: {fileID: 5377712372365419461}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1136,7 +1136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9195419640483786522}
   - component: {fileID: 5990342037200068795}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: left_sholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1225,7 +1225,7 @@ GameObject:
   - component: {fileID: 8315989383673957409}
   - component: {fileID: 1923041387986861282}
   - component: {fileID: 6381979674634387474}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Zombie Boss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -1354,6 +1354,16 @@ MonoBehaviour:
   fadeWaitTime: 1
   fadeDuration: 2
   spawnDelay: 1
+  expDatabase: {fileID: 0}
+  expDropAmount: 10
+  useAStar: 0
+  useRaycast: 0
+  pathUpdateInterval: 0.5
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  rayDistance: 1.5
+  rayRadius: 3
   minSkillCooldown: 5
   maxSkillCooldown: 10
   bossBGM: {fileID: 8300000, guid: 9806682cca77e3a4fa2e8b80fc27db6b, type: 3}
@@ -1372,6 +1382,7 @@ MonoBehaviour:
   jumpDamageMultiplier: 3
   jumpHeightScale: 0.5
   jumpSlamVFXPrefab: {fileID: 2281117331703623259, guid: 120105fc5ededcd48bb1f5a645f99716, type: 3}
+  arenaPrefab: {fileID: 2885650495709150907, guid: 9f6aa64e195fc024cad76b320a640058, type: 3}
 --- !u!114 &1923041387986861282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1407,7 +1418,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3511416284387090305}
   - component: {fileID: 4165400617372673878}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: right_sholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1492,7 +1503,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1261955521615726427}
   - component: {fileID: 4891208864190168800}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: left_hip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1577,7 +1588,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6425357950800566636}
   - component: {fileID: 6980708965896178716}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Left_feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

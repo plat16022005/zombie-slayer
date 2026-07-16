@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ca531db08c840c48bcb5a28a5d9bbe1, type: 3}
+  m_Name: Lv3
+  m_EditorClassIdentifier: 
+  winCondition: 0
+  surviveTimeInSeconds: 120
+  bossPrefab: {fileID: 7453963691900584641, guid: d085ec851e6c15344b9760b9401a57f5, type: 3}
+  waves:
+  - waveName: Wave1
+    delayBeforeWave: 0
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 30
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 30
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 30
+      spawnInterval: 1
+  - waveName: Wave2
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 50
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 50
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: 72245f85d8eceba49829294adab99339, type: 3}
+      count: 25
+      spawnInterval: 2
+  - waveName: Wave3
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: 72245f85d8eceba49829294adab99339, type: 3}
+      count: 40
+      spawnInterval: 0.5
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 20
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 20
+      spawnInterval: 1
+  - waveName: Wave4
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: 72245f85d8eceba49829294adab99339, type: 3}
+      count: 60
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 60
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 60
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 60
+      spawnInterval: 1

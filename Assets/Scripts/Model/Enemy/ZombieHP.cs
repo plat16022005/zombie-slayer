@@ -5,9 +5,9 @@ public class ZombieHP : Zombie
     protected override void Init()
     {
         state = StateCharacter.Idle;
-        hp = 120;
-        attack = 8;
-        speed = 5;
+        hp = 200;
+        attack = 15;
+        speed = 6;
         defend = 0;
         moanTimer = Random.Range(moanIntervalMin, moanIntervalMax);
     }

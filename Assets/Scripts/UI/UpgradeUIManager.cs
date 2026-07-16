@@ -11,6 +11,11 @@ public class UpgradeUIManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject upgradePanel; // Kéo Panel Nâng cấp vào đây
 
+    [Header("Audio")]
+    public AudioClip successSound;
+    public AudioClip errorSound;
+    private AudioSource audioSource;
+
     [Header("Cấu hình Tăng Chỉ Số / 1 Điểm")]
     public float attackPerPoint = 5f;
     public float hpPerPoint = 20f;
@@ -37,6 +42,16 @@ public class UpgradeUIManager : MonoBehaviour
     private int addedAttackPoints = 0;
     private int addedHpPoints = 0;
     private int addedDefendPoints = 0;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
+    }
 
     private void OnEnable()
     {
@@ -161,6 +176,7 @@ public class UpgradeUIManager : MonoBehaviour
         if (totalPoints == 0)
         {
             if (warningText != null) warningText.text = "<color=yellow>Bạn chưa cộng điểm nào!</color>";
+            PlaySound(errorSound);
             return;
         }
 
@@ -170,6 +186,7 @@ public class UpgradeUIManager : MonoBehaviour
         {
             int missingGold = totalCost - DataGame.Instance.Gold;
             if (warningText != null) warningText.text = $"<color=red>Không đủ Vàng! Còn thiếu {missingGold} Vàng.</color>";
+            PlaySound(errorSound);
             return;
         }
 
@@ -194,11 +211,24 @@ public class UpgradeUIManager : MonoBehaviour
         // Lưu lên Firestore
         SaveToFirestore(newAtk, newHp, newSpd, newDef, newGold);
 
-        // Reset bộ đếm điểm tạm thời và cập nhật UI
+        // Reset bộ đếm điểm tạm thời và cập nhật UI nội bộ
         ResetPoints();
         UpdateUI();
         
+        // Cập nhật giao diện của MainMenu (hiển thị số vàng mới)
+        MainMenuManager mainMenu = FindObjectOfType<MainMenuManager>();
+        if (mainMenu != null) mainMenu.UpdateProfileUI();
+        
         if (warningText != null) warningText.text = "<color=green>Nâng cấp thành công!</color>";
+        PlaySound(successSound);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void SaveToFirestore(float attack, float maxHp, float speed, float defend, int gold)

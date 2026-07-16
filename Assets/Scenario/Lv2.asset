@@ -17,6 +17,54 @@ MonoBehaviour:
   bossPrefab: {fileID: 7453963691900584641, guid: d085ec851e6c15344b9760b9401a57f5, type: 3}
   waves:
   - waveName: Wave1
+    delayBeforeWave: 0
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 20
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 20
+      spawnInterval: 1
+  - waveName: Wave2
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 20
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 20
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 20
+      spawnInterval: 1
+  - waveName: Wave3
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 40
+      spawnInterval: 0.5
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 40
+      spawnInterval: 0.5
+  - waveName: Wave4
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 40
+      spawnInterval: 0.5
+  - waveName: Wave5
+    delayBeforeWave: 10
+    groups:
+    - enemyPrefab: {fileID: 8516106757747586681, guid: fb5be15ebde4e9046a294dc6eb51eb54, type: 3}
+      count: 50
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: f9e0c5680fcf5274abbd67e1057b560e, type: 3}
+      count: 50
+      spawnInterval: 1
+    - enemyPrefab: {fileID: 8516106757747586681, guid: a51c24ef419ce3f4b9a7ffd7c9505d84, type: 3}
+      count: 50
+      spawnInterval: 1
+  - waveName: Wave6
     delayBeforeWave: 10
     groups:
     - enemyPrefab: {fileID: 7453963691900584641, guid: d085ec851e6c15344b9760b9401a57f5, type: 3}

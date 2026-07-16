@@ -4,6 +4,7 @@ using Firebase.Auth;
 using Firebase.Extensions;
 using System.Threading.Tasks;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class FirebaseAuthManager : MonoBehaviour
 {
@@ -252,6 +253,7 @@ public class FirebaseAuthManager : MonoBehaviour
         {
             auth.SignOut();
             Debug.Log("Đã đăng xuất.");
+            SceneManager.LoadScene("StartGame");
         }
     }
 
